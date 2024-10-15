@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 FROM ghcr.io/oomol/server-base:v0.2.1 AS builder
 
 # npm config get cache
