@@ -10,6 +10,6 @@ RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
     && apt install -y --no-install-recommends locales-all tar xz-utils uuid-runtime mosquitto
 RUN echo "export PATH=/app/node_modules/.bin:$PATH" >> ~/.bashrc && echo "export PATH=/app/node_modules/.bin:$PATH" >> ~/.zshrc
 COPY ./package.json /app/package.json
-RUN --mount=type=secret,id=npmrc,target=/root/.npmrc --mount=type=secret,id=token,env=GITHUB_TOKEN --mount=type=cache,target=${NPM_CACHE} npm install
+RUN --mount=type=secret,id=npmrc,target=/root/.npmrc --mount=type=secret,id=token,env=NODE_AUTH_TOKEN --mount=type=cache,target=${NPM_CACHE} npm install
 RUN pip install /app/node_modules/@oomol/python-sdk/dist/*.whl
 RUN ln -sf /app/node_modules/@oomol/ovmlayer/ovmlayer /usr/local/bin/ovmlayer
