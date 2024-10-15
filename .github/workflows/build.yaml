@@ -16,6 +16,8 @@ jobs:
         with:
           scope: '@oomol'
           registry-url: 'https://npm.pkg.github.com'
+      - run:
+          cat .npmrc
       - name: Build the Docker image
         run: docker build --secret id=npmrc,src=.npmrc --secret id=token,env=NODE_AUTH_TOKEN -t ovmlayer-rootfs -f .Dockerfile .
         env:
