@@ -1,0 +1,25 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    // 配置项文档 https://docs.renovatebot.com/configuration-options
+    "extends": ["config:recommended"],
+    "schedule": [
+      "* 0-17 * * 1-5", // 工作时间 UTC 时间 0-17 每小时跑一次
+      "* 0,4,12 * * 6,7" // 周末 UTC 时间 0,4,12 每小时跑一次
+    ],
+    "rangeStrategy": "bump",
+    "packageRules": [
+      {
+        "matchDepPatterns": [".*"],
+        "enabled": false
+      },
+      {
+        "matchDepPrefixes": ["@oomol"],
+        "groupName": "@oomol packages",
+        "labels": ["oomol packages"],
+        "enabled": true,
+        "reviewers": ["leavesster"]
+      }
+    ],
+    "npmrc": "@oomol:registry=https://npm.pkg.github.com/" // renovate 似乎不读仓库的 .npmrc. npmrc merge 参数也不生效。鉴权 token 在 developer.mend.io 里配置了 org 级别的 hostRules.
+  }
+  

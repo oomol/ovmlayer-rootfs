@@ -1,0 +1,11 @@
+{
+  "name": "@oomol/rootfs",
+  "private": true,
+  "dependencies": {
+    "@oomol/ovmlayer": "latest",
+    "@oomol/oocana": "latest",
+    "@oomol/node-executor": "latest",
+    "@oomol/python-sdk": "latest",
+    "@oomol/python-executor": "latest"
+  }
+}
