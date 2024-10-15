@@ -8,3 +8,4 @@ RUN echo "export PATH=/app/node_modules/.bin:$PATH" >> ~/.bashrc && echo "export
 COPY ./package.json /app/package.json
 RUN --mount=type=secret,id=npmrc,target=/root/.npmrc --mount=type=cache,target=${NPM_CACHE} npm install
 RUN pip install /app/node_modules/@oomol/python-sdk/dist/*.whl
+RUN ln -sf /app/node_modules/@oomol/ovmlayer/ovmlayer /usr/local/bin/ovmlayer
