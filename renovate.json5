@@ -20,6 +20,6 @@
         "reviewers": ["leavesster"]
       }
     ],
-    "npmrc": "@oomol:registry=https://npm.pkg.github.com/" // renovate 似乎不读仓库的 .npmrc. npmrc merge 参数也不生效。鉴权 token 在 developer.mend.io 里配置了 org 级别的 hostRules.
+    "npmrcMerge": true
   }
   
