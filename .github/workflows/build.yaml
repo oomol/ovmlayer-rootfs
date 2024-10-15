@@ -1,0 +1,21 @@
+name: build image
+on:
+  push:
+    paths:
+      - "Dockerfile"
+      - "package.json"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          scope: '@oomol'
+          registry-url: 'https://npm.pkg.github.com'
+      - name: Build the Docker image
+        run: docker build --secret id=npmrc,src=.npmrc --secret id=token,env=NODE_AUTH_TOKEN -t ovmlayer-rootfs -f .Dockerfile .
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
