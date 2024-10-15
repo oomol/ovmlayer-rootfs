@@ -2,8 +2,9 @@ name: build image
 on:
   push:
     paths:
-      - "Dockerfile"
+      - ".Dockerfile"
       - "package.json"
+      - ".github/workflows/build.yaml"
   workflow_dispatch:
 
 jobs:
