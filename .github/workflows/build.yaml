@@ -23,7 +23,8 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/ovmlayer-rootfs
+          images: |
+            name=ovmlayer-rootfs
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
