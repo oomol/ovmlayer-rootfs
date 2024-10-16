@@ -28,6 +28,8 @@ jobs:
           images: ghcr.io/${{ github.repository }}
           tags: |
             type=sha
+          flavor: |
+            latest=auto
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
