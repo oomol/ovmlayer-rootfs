@@ -4,7 +4,6 @@ on:
     paths:
       - ".Dockerfile"
       - "package.json"
-      - ".github/workflows/build.yaml"
   workflow_dispatch:
 
 jobs:
@@ -43,3 +42,5 @@ jobs:
           secret-files: |
             npmrc=.npmrc
           file: .Dockerfile
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
