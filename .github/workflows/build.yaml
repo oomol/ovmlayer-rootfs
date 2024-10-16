@@ -1,6 +1,8 @@
 name: build image
 on:
   push:
+    tags:
+      - "**"
     paths:
       - ".Dockerfile"
       - "package.json"
@@ -27,6 +29,8 @@ jobs:
           images: ghcr.io/${{ github.repository }}
           tags: |
             type=sha
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=semver
           flavor: |
             latest=auto
       - name: Build and push
