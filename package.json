@@ -3,7 +3,7 @@
   "private": true,
   "dependencies": {
     "@oomol/node-executor": "0.19.12",
-    "@oomol/oocana": "0.19.16",
+    "@oomol/oocana": "0.19.17",
     "@oomol/oocana-sdk": "0.18.8",
     "@oomol/ovmlayer": "0.1.5",
     "@oomol/python-executor": "0.14.14",
