@@ -53,11 +53,12 @@ jobs:
         if : ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         run: |
           docker run -d --name rootfs-export ${{env.IMAGE_NAME}} true
-          docker export rootfs-export > base-rootfs-amd64.tar
+          docker export rootfs-export >> base-rootfs.tar
       - name: Release
+        if : ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         uses: softprops/action-gh-release@v2
         with:
-          files: base-rootfs-amd64.tar
+          files: base-rootfs.tar
           token: ${{ secrets.GITHUB_TOKEN }}
           body: ${{ github.sha }}
           draft: false
