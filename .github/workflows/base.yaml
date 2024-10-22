@@ -1,4 +1,4 @@
-name: build image
+name: build base image
 on:
   pull_request:
     paths:
@@ -48,7 +48,7 @@ jobs:
           cache-to: type=gha,mode=max
       - name: export rootfs
         run: |
-          docker run -d --name rootfs-export ${{ steps.meta.outputs.images }}
+          docker run -d --name rootfs-export ${{ steps.meta.outputs.images }} true
           docker export rootfs-export > base-rootfs-amd64.tar
       - name: Release
         uses: softprops/action-gh-release@v2
