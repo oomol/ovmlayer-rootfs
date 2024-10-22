@@ -10,6 +10,9 @@ on:
       - ".github/workflows/base.yaml"
   workflow_dispatch:
 
+env:
+  IMAGE_NAME: ghcr.io/oomol/base-rootfs
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -28,7 +31,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/oomol/base-rootfs
+          images: ${{env.IMAGE_NAME}}
           tags: |
             type=sha
             type=raw,value=latest,enable={{is_default_branch}}
@@ -47,8 +50,9 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: export rootfs
+        if : ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         run: |
-          docker run -d --name rootfs-export ${{ steps.meta.outputs.images }} true
+          docker run -d --name rootfs-export ${{env.IMAGE_NAME}} true
           docker export rootfs-export > base-rootfs-amd64.tar
       - name: Release
         uses: softprops/action-gh-release@v2
