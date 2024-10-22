@@ -10,6 +10,9 @@ on:
       - ".github/workflows/base.yaml"
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 env:
   IMAGE_NAME: ghcr.io/oomol/base-rootfs
 
@@ -42,7 +45,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          push: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.ref_type == 'tag' }}
+          push: ${{ github.ref_type == 'tag' }}
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -69,7 +72,7 @@ jobs:
       - name: export rootfs
         if : ${{ github.event_name == 'push' &&  github.ref_type == 'tag' }}
         run: |
-          docker run -d --name base --platform ${{matrix.platform}} true
+          docker run -d --name rootfs-export --platform ${{matrix.platform}} ${{env.IMAGE_NAME}} true
           docker export rootfs-export >> ${{steps.rootfs.outputs.rootfs_name}}.tar
       - name: Release
         uses: softprops/action-gh-release@v2
