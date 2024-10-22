@@ -59,7 +59,6 @@ jobs:
         with:
           files: base-rootfs-amd64.tar
           token: ${{ secrets.GITHUB_TOKEN }}
-          tag_name: ${{ github.sha }}
           body: ${{ github.sha }}
           draft: false
           prerelease: false
