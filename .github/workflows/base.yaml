@@ -2,14 +2,12 @@ name: build image
 on:
   pull_request:
     paths:
-      - ".Dockerfile"
-      - "package.json"
-      - "package-lock.json"
+      - "base.dockerfile"
+      - ".github/workflows/base.yaml"
   push:
     paths:
-      - ".Dockerfile"
-      - "package.json"
-      - "package-lock.json"
+      - "base.dockerfile"
+      - ".github/workflows/base.yaml"
   workflow_dispatch:
 
 jobs:
@@ -17,7 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: echo '//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}' >> .npmrc
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -31,7 +28,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository }}
+          images: ghcr.io/oomol/base-rootfs
           tags: |
             type=sha
             type=raw,value=latest,enable={{is_default_branch}}
@@ -46,10 +43,20 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          secrets: |
-            token=${{ secrets.GITHUB_TOKEN }}
-          secret-files: |
-            npmrc=.npmrc
-          file: .Dockerfile
+          file: base.dockerfile
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      - name: export rootfs
+        run: |
+          docker run -d --name rootfs-export ${{ steps.meta.outputs.images }}
+          docker export rootfs-export > base-rootfs-amd64.tar
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: base-rootfs-amd64.tar
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${{ github.sha }}
+          body: ${{ github.sha }}
+          draft: false
+          prerelease: false
+          make_latest: true
