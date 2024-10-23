@@ -40,10 +40,6 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{env.IMAGE_NAME}}
-          tags: |
-            type=sha
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=semver,pattern={{version}}
           flavor: |
             latest=auto
       - name: Build and push
@@ -52,7 +48,7 @@ jobs:
           context: .
           push: false
           platforms: ${{ matrix.platform }}
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: local
           labels: ${{ steps.meta.outputs.labels }}
           file: base.dockerfile
           cache-from: type=gha
@@ -68,7 +64,7 @@ jobs:
       - name: export rootfs
         if : ${{ github.event_name == 'push' &&  github.ref_type == 'tag' }}
         run: |
-          docker run -d --name rootfs-export --platform ${{matrix.platform}} ${{env.IMAGE_NAME}} true
+          docker run -d --name rootfs-export --platform ${{matrix.platform}} ${{env.IMAGE_NAME}}:local true
           docker export rootfs-export >> ${{steps.rootfs.outputs.rootfs_name}}.tar
       - name: Release
         uses: softprops/action-gh-release@v2
