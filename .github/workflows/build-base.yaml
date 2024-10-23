@@ -32,6 +32,9 @@ jobs:
       - uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+      - name: Docker build
+        run: |
+          docker buildx build --platform ${{matrix.platform}} -t base-rootfs:local -f base.dockerfile .
       - name: get rootfs name
         id: rootfs
         run: |
@@ -42,7 +45,7 @@ jobs:
           fi
       - name: export rootfs
         run: |
-          docker run -d --name rootfs-export --platform ${{matrix.platform}} ubuntu true
+          docker run -d --name rootfs-export base-rootfs:local true
           docker export rootfs-export >> ${{steps.rootfs.outputs.rootfs_name}}.tar
       - name: Setup tmate session
         if: ${{ failure() }}
