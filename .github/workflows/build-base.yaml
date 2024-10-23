@@ -65,6 +65,9 @@ jobs:
         run: |
           docker run -d --name rootfs-export --platform ${{matrix.platform}} ${{env.IMAGE_NAME}}:local true
           docker export rootfs-export >> ${{steps.rootfs.outputs.rootfs_name}}.tar
+      - name: Setup tmate session
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
       - name: Release
         uses: softprops/action-gh-release@v2
         if: ${{ github.event_name == 'push' &&  github.ref_type == 'tag' }}
