@@ -48,7 +48,7 @@ jobs:
           context: .
           push: false
           platforms: ${{ matrix.platform }}
-          tags: local
+          tags: ${{env.IMAGE_NAME}}:local
           labels: ${{ steps.meta.outputs.labels }}
           file: base.dockerfile
           cache-from: type=gha
@@ -62,12 +62,12 @@ jobs:
             echo "rootfs_name=arm64-rootfs" >> $GITHUB_OUTPUT
           fi
       - name: export rootfs
-        if : ${{ github.event_name == 'push' &&  github.ref_type == 'tag' }}
         run: |
           docker run -d --name rootfs-export --platform ${{matrix.platform}} ${{env.IMAGE_NAME}}:local true
           docker export rootfs-export >> ${{steps.rootfs.outputs.rootfs_name}}.tar
       - name: Release
         uses: softprops/action-gh-release@v2
+        if: ${{ github.event_name == 'push' &&  github.ref_type == 'tag' }}
         with:
           files: ${{steps.rootfs.outputs.rootfs_name}}.tar
           token: ${{ secrets.GITHUB_TOKEN }}
