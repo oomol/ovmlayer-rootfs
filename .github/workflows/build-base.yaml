@@ -34,7 +34,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
       - name: Docker build
         run: |
-          docker buildx build --platform ${{matrix.platform}} -t base-rootfs:local -f base.dockerfile .
+          docker buildx build --load --platform ${{matrix.platform}} -t base-rootfs:local -f base.dockerfile .
       - name: get rootfs name
         id: rootfs
         run: |
