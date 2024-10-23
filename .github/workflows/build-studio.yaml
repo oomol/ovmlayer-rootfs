@@ -6,6 +6,8 @@ on:
       - "package.json"
       - "package-lock.json"
   push:
+    tags-ignore:
+      - "base-rootfs*"
     paths:
       - ".Dockerfile"
       - "package.json"
