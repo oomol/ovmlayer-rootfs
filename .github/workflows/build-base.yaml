@@ -1,22 +1,19 @@
 name: build base image
+
 on:
   pull_request:
     paths:
-      - "base.dockerfile"
-      - ".github/workflows/base.yaml"
+      - ".github/workflows/build-base.yaml"
   push:
     tags:
       - "base-rootfs*"
     paths:
-      - "base.dockerfile"
-      - ".github/workflows/base.yaml"
+      - ".github/workflows/build-base.yaml"
   workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-env:
-  IMAGE_NAME: ghcr.io/oomol/base-rootfs
 
 jobs:
   build-base:
@@ -35,24 +32,6 @@ jobs:
       - uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{env.IMAGE_NAME}}
-          flavor: |
-            latest=auto
-      - name: Build and push
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: false
-          platforms: ${{ matrix.platform }}
-          tags: ${{env.IMAGE_NAME}}:local
-          labels: ${{ steps.meta.outputs.labels }}
-          file: base.dockerfile
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
       - name: get rootfs name
         id: rootfs
         run: |
@@ -63,7 +42,7 @@ jobs:
           fi
       - name: export rootfs
         run: |
-          docker run -d --name rootfs-export --platform ${{matrix.platform}} ${{env.IMAGE_NAME}}:local true
+          docker run -d --name rootfs-export --platform ${{matrix.platform}} ubuntu true
           docker export rootfs-export >> ${{steps.rootfs.outputs.rootfs_name}}.tar
       - name: Setup tmate session
         if: ${{ failure() }}
