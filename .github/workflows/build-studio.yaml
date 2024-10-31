@@ -5,6 +5,7 @@ on:
       - ".Dockerfile"
       - "package.json"
       - "package-lock.json"
+      - ".github/workflows/build-studio.yaml"
   push:
     tags-ignore:
       - "base-rootfs*"
@@ -12,6 +13,7 @@ on:
       - ".Dockerfile"
       - "package.json"
       - "package-lock.json"
+      - ".github/workflows/build-studio.yaml"
   workflow_dispatch:
 
 jobs:
@@ -55,3 +57,25 @@ jobs:
           file: .Dockerfile
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      - name: export studio rootfs
+        run: |
+          docker run --platform linux/amd64 -d --name amd64-studio-rootfs-export ghcr.io/${{ github.repository }}:latest true
+          docker export amd64-studio-rootfs-export >> amd64-studio-rootfs.tar
+          docker run --platform linux/arm64 -d --name arm64-studio-rootfs-export ghcr.io/${{ github.repository }}:latest true
+          docker export arm64-studio-rootfs-export >> arm64-studio-rootfs.tar
+      - name: Setup tmate session
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
+        timeout-minutes: 12
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: ${{ github.event_name == 'push' &&  github.ref_type == 'tag' }}
+        with:
+          files: |
+            amd64-studio-rootfs.tar
+            arm64-studio-rootfs.tar
+          token: ${{ secrets.GITHUB_TOKEN }}
+          append_body: true
+          draft: false
+          prerelease: false
+          make_latest: true
