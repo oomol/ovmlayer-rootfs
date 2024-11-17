@@ -1,4 +1,4 @@
-name: build studio image
+name: build studio rootfs
 on:
   pull_request:
     paths:
