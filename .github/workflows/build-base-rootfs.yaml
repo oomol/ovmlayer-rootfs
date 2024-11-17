@@ -7,8 +7,6 @@ on:
   push:
     tags:
       - "base-rootfs*"
-    paths:
-      - ".github/workflows/build-base-rootfs.yaml"
   workflow_dispatch:
 
 concurrency:

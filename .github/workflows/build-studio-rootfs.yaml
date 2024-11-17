@@ -9,11 +9,6 @@ on:
   push:
     tags:
       - "studio-rootfs*"
-    paths:
-      - ".Dockerfile"
-      - "package.json"
-      - "package-lock.json"
-      - ".github/workflows/build-studio-rootfs.yaml"
   workflow_dispatch:
 
 jobs:
