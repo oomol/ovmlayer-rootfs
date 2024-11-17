@@ -3,12 +3,12 @@ name: build base image
 on:
   pull_request:
     paths:
-      - ".github/workflows/build-base.yaml"
+      - ".github/workflows/build-base-rootfs.yaml"
   push:
     tags:
       - "base-rootfs*"
     paths:
-      - ".github/workflows/build-base.yaml"
+      - ".github/workflows/build-base-rootfs.yaml"
   workflow_dispatch:
 
 concurrency:
@@ -47,9 +47,10 @@ jobs:
         run: |
           docker run -d --name rootfs-export base-rootfs:local true
           docker export rootfs-export >> ${{steps.rootfs.outputs.rootfs_name}}.tar
-      - name: Setup tmate session
-        if: ${{ failure() }}
-        uses: mxschmitt/action-tmate@v3
+      # - name: Setup tmate session
+      #   if: ${{ failure() }}
+      #   timeout-minutes: 12
+      #   uses: mxschmitt/action-tmate@v3
       - name: Release
         uses: softprops/action-gh-release@v2
         if: ${{ github.event_name == 'push' &&  github.ref_type == 'tag' }}
