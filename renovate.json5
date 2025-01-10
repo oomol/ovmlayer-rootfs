@@ -1,11 +1,12 @@
 {
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    // 配置项文档 https://docs.renovatebot.com/configuration-options
     "extends": ["config:recommended"],
     "schedule": [
       "* 0-17 * * 1-5", // 工作时间 UTC 时间 0-17 每小时跑一次
-      "* 0,4,12 * * 6,7" // 周末 UTC 时间 0,4,12 每小时跑一次
+      "* 0-12 * * 6,7" // 周末 UTC 时间 0,4,12 每小时跑一次
     ],
+    "automerge": true,
+    "automergeStrategy": "squash",
     "rangeStrategy": "pin",
     "packageRules": [
       {
@@ -16,8 +17,8 @@
         "matchDepPrefixes": ["@oomol"],
         "groupName": "@oomol packages",
         "labels": ["oomol packages"],
-        "enabled": true,
-        "reviewers": ["leavesster"]
+        "enabled": true
+
       }
     ],
     "npmrcMerge": true
