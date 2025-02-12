@@ -2,11 +2,11 @@
   "name": "@oomol/rootfs",
   "private": true,
   "dependencies": {
-    "@oomol/node-executor": "0.19.43",
+    "@oomol/node-executor": "0.19.44",
     "@oomol/oocana": "0.21.12",
-    "@oomol/oocana-sdk": "0.18.26",
+    "@oomol/oocana-sdk": "0.18.27",
     "@oomol/ovmlayer": "0.3.11",
     "@oomol/python-executor": "0.14.35",
-    "@oomol/python-sdk": "0.14.26"
+    "@oomol/python-sdk": "0.14.27"
   }
 }
