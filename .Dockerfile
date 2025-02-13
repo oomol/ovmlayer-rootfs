@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # https://github.com/docker/docs/issues/20935
-FROM ghcr.io/oomol/server-base:v0.2.1 AS builder
+FROM ghcr.io/oomol/server-base:v0.3.1 AS builder
 
 # npm config get cache
 ENV NPM_CACHE=$HOME/.npm
