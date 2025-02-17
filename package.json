@@ -6,7 +6,7 @@
     "@oomol/oocana": "0.21.17",
     "@oomol/oocana-sdk": "0.18.27",
     "@oomol/ovmlayer": "0.3.12",
-    "@oomol/python-executor": "0.14.35",
+    "@oomol/python-executor": "0.14.37",
     "@oomol/python-sdk": "0.14.27"
   }
 }
