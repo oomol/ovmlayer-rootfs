@@ -18,7 +18,11 @@
         "groupName": "@oomol packages",
         "labels": ["oomol packages"],
         "enabled": true
-
+      },
+      {
+        "matchDatasources": ["docker"],
+        "versioning": "semver",
+        "enabled": true
       }
     ],
     "npmrcMerge": true
