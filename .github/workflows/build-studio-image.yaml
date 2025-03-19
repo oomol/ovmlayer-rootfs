@@ -34,6 +34,8 @@ jobs:
             type=semver,pattern={{version}}
           flavor: |
             latest=auto
+          labels: |
+            org.opencontainers.image.description=A container for running Oocana directly in command line. Python and Node.js block's executor are pre-installed.
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
