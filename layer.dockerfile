@@ -8,6 +8,6 @@ WORKDIR /app
 RUN echo "export PATH=/app/node_modules/.bin:$PATH" >> ~/.bashrc && echo "export PATH=/app/node_modules/.bin:$PATH" >> ~/.zshrc
 COPY ./package.json /app/package.json
 COPY ./requirements.txt /app/requirements.txt
-RUN npm pkg delete dependencies.@oomol/ovmlayer && npm install
+RUN npm pkg delete dependencies.@oomol/oocana && npm install
 # use uv install
 RUN pip install -r /app/requirements.txt
