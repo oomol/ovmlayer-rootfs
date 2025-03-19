@@ -2,7 +2,7 @@ name: build studio image
 on:
   push:
     paths:
-      - ".Dockerfile"
+      - "studio.dockerfile"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/build-studio-image.yaml"
@@ -46,6 +46,6 @@ jobs:
             token=${{ secrets.GITHUB_TOKEN }}
           secret-files: |
             npmrc=.npmrc
-          file: .Dockerfile
+          file: studio.dockerfile
           cache-from: type=gha
           cache-to: type=gha,mode=max
