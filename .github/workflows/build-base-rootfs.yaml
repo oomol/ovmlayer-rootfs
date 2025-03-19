@@ -1,9 +1,10 @@
 name: build base image
-
+description: build base rootfs for ovmlayer setup. support linux/amd64 and linux/arm64. this rootfs only add zsh for oocana run.
 on:
   pull_request:
     paths:
       - ".github/workflows/build-base-rootfs.yaml"
+      - "base.dockerfile"
   push:
     tags:
       - "base-rootfs*"
