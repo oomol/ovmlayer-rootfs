@@ -14,7 +14,8 @@ RUN echo "export PATH=/app/node_modules/.bin:$PATH" >> ~/.bashrc && echo "export
 COPY ./package.json /app/package.json
 COPY ./package-lock.json /app/package-lock.json
 COPY ./requirements.txt /app/requirements.txt
-RUN --mount=type=secret,id=npmrc,target=/root/.npmrc --mount=type=secret,id=token,env=NODE_AUTH_TOKEN --mount=type=cache,target=${NPM_CACHE} npm install
+# RUN --mount=type=secret,id=npmrc,target=/root/.npmrc --mount=type=secret,id=token,env=NODE_AUTH_TOKEN --mount=type=cache,target=${NPM_CACHE} npm install
+RUN npm install --omit=dev
 # use uv install
 RUN pip install -r /app/requirements.txt
 # ovmlayer need setup with rootfs, currently disable it. 
