@@ -28,8 +28,7 @@
         "matchDepNames": ["oocana-python-executor", "oocana"],
         "groupName": "oocana-python",
         "labels": ["oocana-python"],
-        "enabled": true,
-        "reviewers": ["leavesster"]
+        "enabled": true
       }
     ],
     "npmrcMerge": true
