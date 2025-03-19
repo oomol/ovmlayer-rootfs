@@ -3,9 +3,8 @@
 this repo give three artifacts:
 
 1. base-rootfs
-2. studio-image image
-3. studio-rootfs
-
+1. layer-rootfs
+1. studio-image
 
 ## base-rootfs
 
@@ -17,4 +16,9 @@ this is a rootfs that has add additional python-executor and nodejs-executor to 
 
 ## studio-image
 
-this is a image that contains oocana, ovmlayer, python-executor and nodejs-executor.  With this image, you can run oocana directly with layer feature. This should be most used image for oocana-rust layer feature.
+this is a image that contains oocana, ovmlayer, python-executor and nodejs-executor.  With this image, you can run oocana directly(without layer feature). This image should be used to run oocana directly.
+
+```shell
+mosquitto -d -p 47688
+oocana run <flow-yaml>
+```

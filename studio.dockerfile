@@ -17,4 +17,5 @@ COPY ./requirements.txt /app/requirements.txt
 RUN --mount=type=secret,id=npmrc,target=/root/.npmrc --mount=type=secret,id=token,env=NODE_AUTH_TOKEN --mount=type=cache,target=${NPM_CACHE} npm install
 # use uv install
 RUN pip install -r /app/requirements.txt
-RUN ln -sf /app/node_modules/@oomol/ovmlayer/ovmlayer /usr/local/bin/ovmlayer
+# ovmlayer need setup with rootfs, currently disable it. 
+# RUN ln -sf /app/node_modules/@oomol/ovmlayer/ovmlayer /usr/local/bin/ovmlayer
