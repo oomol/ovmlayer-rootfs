@@ -23,6 +23,13 @@
         "matchDatasources": ["docker"],
         "versioning": "semver",
         "enabled": true
+      },
+      {
+        "matchDepNames": ["oocana-python-executor", "oocana"],
+        "groupName": "oocana-python",
+        "labels": ["oocana-python"],
+        "enabled": true,
+        "reviewers": ["leavesster"]
       }
     ],
     "npmrcMerge": true
