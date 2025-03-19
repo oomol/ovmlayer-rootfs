@@ -3,13 +3,13 @@ description: build studio rootfs on ubuntu-latest which contains oocana, python-
 on:
   pull_request:
     paths:
-      - ".Dockerfile"
+      - "layer.dockerfile"
       - "package.json"
       - "package-lock.json"
-      - ".github/workflows/build-studio-rootfs.yaml"
+      - ".github/workflows/build-layer-rootfs.yaml"
   push:
     tags:
-      - "studio-rootfs*"
+      - "layer-rootfs*"
   workflow_dispatch:
 
 jobs:
@@ -17,7 +17,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: echo '//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}' >> .npmrc
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -46,11 +45,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          secrets: |
-            token=${{ secrets.GITHUB_TOKEN }}
-          secret-files: |
-            npmrc=.npmrc
-          file: .Dockerfile
+          file: layer.dockerfile
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: export studio rootfs
@@ -59,10 +54,6 @@ jobs:
           docker export amd64-studio-rootfs-export >> amd64-studio-rootfs.tar
           docker run --platform linux/arm64 -d --name arm64-studio-rootfs-export ghcr.io/${{ github.repository }}:latest true
           docker export arm64-studio-rootfs-export >> arm64-studio-rootfs.tar
-      # - name: Setup tmate session
-      #   if: ${{ failure() }}
-      #   uses: mxschmitt/action-tmate@v3
-      #   timeout-minutes: 12
       - name: Release
         uses: softprops/action-gh-release@v2
         if: ${{ github.event_name == 'push' &&  github.ref_type == 'tag' }}
