@@ -1,5 +1,5 @@
 {
-  "name": "@oomol/rootfs",
+  "name": "@oomol/ovmlayer-rootfs",
   "private": true,
   "dependencies": {
     "@oomol/node-executor": "0.19.53",
