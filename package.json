@@ -2,8 +2,8 @@
   "name": "@oomol/ovmlayer-rootfs",
   "private": true,
   "dependencies": {
-    "@oomol/node-executor": "0.20.17",
-    "@oomol/oocana": "0.22.33",
-    "@oomol/oocana-sdk": "0.19.14"
+    "@oomol/node-executor": "0.20.18",
+    "@oomol/oocana": "0.22.35",
+    "@oomol/oocana-sdk": "0.19.15"
   }
 }
