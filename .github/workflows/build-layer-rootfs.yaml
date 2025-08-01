@@ -1,5 +1,5 @@
 name: build layer rootfs
-description: build studio rootfs on ubuntu-latest which contains oocana, python-executor, nodejs-executor, and ovmlayer
+# build studio rootfs on ubuntu-latest which contains oocana, python-executor, nodejs-executor, and ovmlayer
 on:
   pull_request:
     paths:
