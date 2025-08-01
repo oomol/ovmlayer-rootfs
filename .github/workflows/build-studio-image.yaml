@@ -5,6 +5,7 @@ on:
       - "studio.dockerfile"
       - "package.json"
       - "package-lock.json"
+      - ".github/actions/ovmlayer/action.yml"
       - ".github/workflows/build-studio-image.yaml"
   workflow_dispatch:
 
