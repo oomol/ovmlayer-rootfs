@@ -42,9 +42,6 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           architecture: amd64
-          oocana: v0.30.2
-          ovmlayer: ovmlayer@0.5.1
-          rootfs: base-rootfs@0.4.0
   download-arm64:
     runs-on: ubuntu-24.04-arm
     if: ${{ inputs.architecture == 'arm64' || github.event_name == 'pull_request' }}
@@ -57,6 +54,3 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           architecture: arm64
-          oocana: v0.30.2
-          ovmlayer: ovmlayer@0.5.1
-          rootfs: base-rootfs@0.4.0

@@ -6,7 +6,7 @@ inputs:
     required: true
     default: ${{ github.token }}
   architecture:
-    description: "rootfs tar"
+    description: "architecture, either amd64 or arm64"
     required: false
     default: "amd64"
   oocana:
@@ -20,7 +20,7 @@ inputs:
   rootfs:
     description: "rootfs tar"
     required: false
-    default: "base-rootfs@0.4.0"
+    default: "studio-rootfs@1.0.0"
 
 runs:
   using: "composite"
@@ -76,7 +76,7 @@ runs:
 
     - name: download rootfs
       run: |
-          gh release download ${{ inputs.rootfs }} --repo oomol/ovmlayer-rootfs --pattern "${{inputs.architecture}}-rootfs.tar" -O $(pwd)/${{inputs.architecture}}/rootfs.tar
+          gh release download ${{ inputs.rootfs }} --repo oomol/ovmlayer-rootfs --pattern "${{inputs.architecture}}*" -O $(pwd)/${{inputs.architecture}}/rootfs.tar
       shell: bash
       env:
         GH_TOKEN: ${{ inputs.token }}
