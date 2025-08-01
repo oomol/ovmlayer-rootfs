@@ -36,17 +36,21 @@ runs:
           exit 1
         fi
       shell: bash
+    - name: mkdir 
+      run: |
+        mkdir -p $(pwd)/${inputs.architecture}
+      shell: bash
     # TODO: Download oocana from npm package, so that it can keep updating. It should install oocana by npm, currently @oomol/oocana does not add oocana binary to PATH, so we download cli binary directly for now.
     - name: download oocana
       run: |
         if [ "${{ inputs.architecture }}" = "amd64" ]; then
           gh release download ${{ inputs.oocana }} --repo oomol/oocana-rust --pattern "oocana-cli-x86_64-unknown-linux-gnu.tar.gz" -O oocana-cli.tar.gz
           tar -xf oocana-cli.tar.gz -C /tmp
-          mv /tmp/oocana-cli-x86_64-unknown-linux-gnu $(pwd)/oocana
+          mv /tmp/oocana-cli-x86_64-unknown-linux-gnu $(pwd)/${inputs.architecture}/oocana
         elif [ "${{ inputs.architecture }}" = "arm64" ]; then
           gh release download ${{ inputs.oocana }} --repo oomol/oocana-rust --pattern "oocana-cli-aarch64-unknown-linux-gnu.tar.gz" -O oocana-cli.tar.gz
           tar -xf oocana-cli.tar.gz -C /tmp
-          mv /tmp/oocana-cli-aarch64-unknown-linux-gnu $(pwd)/oocana
+          mv /tmp/oocana-cli-aarch64-unknown-linux-gnu $(pwd)/${inputs.architecture}/oocana
         fi
       shell: bash
       env:
@@ -67,12 +71,12 @@ runs:
       run: |
         mkdir -p /tmp/ovmlayer
         zstd -d ovmlayer.tar.zst -o /tmp/ovmlayer.tar
-        tar -xf /tmp/ovmlayer.tar -C $(pwd)
+        tar -xf /tmp/ovmlayer.tar -C $(pwd)/${inputs.architecture}
       shell: bash
 
     - name: download rootfs
       run: |
-          gh release download ${{ inputs.rootfs }} --repo oomol/ovmlayer-rootfs --pattern "${{inputs.architecture}}-rootfs.tar" -O $(pwd)/rootfs.tar
+          gh release download ${{ inputs.rootfs }} --repo oomol/ovmlayer-rootfs --pattern "${{inputs.architecture}}-rootfs.tar" -O $(pwd)/${inputs.architecture}/rootfs.tar
       shell: bash
       env:
         GH_TOKEN: ${{ inputs.token }}
