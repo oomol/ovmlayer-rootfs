@@ -74,8 +74,7 @@ jobs:
           files: |
             ${{ steps.tar-name.outputs.tar }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          body_path: package.json
-          append_body: false
+          append_body: true
           draft: false
           prerelease: false
           make_latest: true
