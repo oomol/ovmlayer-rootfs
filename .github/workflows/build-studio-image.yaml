@@ -1,5 +1,12 @@
 name: build studio image
 on:
+  pull_request:
+    paths:
+      - "studio.dockerfile"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/actions/ovmlayer/action.yml"
+      - ".github/workflows/build-studio-image.yaml"
   push:
     paths:
       - "studio.dockerfile"
