@@ -22,7 +22,7 @@ RUN mkdir -p /opt/ovmlayer
 COPY ./entrypoint.sh /root/entrypoint.sh
 COPY ./amd64 ./amd64
 COPY ./arm64 ./arm64
-COPY ./scripts/bin.sh /bin.sh
-RUN ./bin.sh
+COPY ./scripts/bin.sh /root/bin.sh
+RUN /root/bin.sh
 RUN rm -rf ./amd64 ./arm64
 ENTRYPOINT [ "bash", "-x", "/root/entrypoint.sh" ]
