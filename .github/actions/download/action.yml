@@ -36,6 +36,7 @@ runs:
           exit 1
         fi
       shell: bash
+    # TODO: Download oocana from npm package, so that it can keep updating. It should install oocana by npm, currently @oomol/oocana does not add oocana binary to PATH, so we download cli binary directly for now.
     - name: download oocana
       run: |
         if [ "${{ inputs.architecture }}" = "amd64" ]; then
