@@ -70,8 +70,8 @@ runs:
     - name: extract ovmlayer
       run: |
         mkdir -p /tmp/ovmlayer
-        zstd -d ovmlayer-${{inputs.architecture}}.tar.zst -o /tmp/ovmlayer.tar
-        tar -xf /tmp/ovmlayer.tar -C $(pwd)/${{inputs.architecture}}
+        zstd -d ovmlayer-${{inputs.architecture}}.tar.zst -o /tmp/ovmlayer-${{inputs.architecture}}.tar
+        tar -xf /tmp/ovmlayer-${{inputs.architecture}}.tar -C $(pwd)/${{inputs.architecture}}
       shell: bash
 
     - name: download rootfs
