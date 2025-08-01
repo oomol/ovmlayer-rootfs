@@ -1,5 +1,7 @@
-name: build base image
-description: build base rootfs for ovmlayer setup. support linux/amd64 and linux/arm64. this rootfs only add zsh for oocana run.
+name: build base rootfs
+# Build the base rootfs for the ovmlayer setup.
+# This workflow creates a multi-architecture (amd64, arm64) rootfs based on Ubuntu with Zsh.
+
 on:
   pull_request:
     paths:
@@ -46,10 +48,6 @@ jobs:
         run: |
           docker run -d --name rootfs-export base-rootfs:local true
           docker export rootfs-export >> ${{steps.rootfs.outputs.rootfs_name}}.tar
-      # - name: Setup tmate session
-      #   if: ${{ failure() }}
-      #   timeout-minutes: 12
-      #   uses: mxschmitt/action-tmate@v3
       - name: Release
         uses: softprops/action-gh-release@v2
         if: ${{ github.event_name == 'push' &&  github.ref_type == 'tag' }}
