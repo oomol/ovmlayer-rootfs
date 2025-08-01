@@ -2,6 +2,9 @@
 # https://github.com/docker/docs/issues/20935
 FROM ghcr.io/oomol/server-base:v0.4.1
 
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
+
 # npm config get cache
 ENV NPM_CACHE=$HOME/.npm
 WORKDIR /app
@@ -23,6 +26,6 @@ COPY ./entrypoint.sh /root/entrypoint.sh
 COPY ./amd64 ./amd64
 COPY ./arm64 ./arm64
 COPY ./scripts/bin.sh /root/bin.sh
-RUN /root/bin.sh
+RUN TARGETPLATFORM=$TARGETPLATFORM BUILDPLATFORM=$BUILDPLATFORM /root/bin.sh
 RUN rm -rf ./amd64 ./arm64
 ENTRYPOINT [ "bash", "-x", "/root/entrypoint.sh" ]
