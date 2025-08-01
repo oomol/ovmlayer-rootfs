@@ -20,7 +20,9 @@ RUN pip install -r /app/requirements.txt
 # need download oocana
 RUN mkdir -p /opt/ovmlayer
 COPY ./entrypoint.sh /root/entrypoint.sh
-COPY ./oocana /app/
-COPY ./ovmlayer /app/
-COPY ./rootfs.tar /root/rootfs.tar
+COPY ./amd64 ./amd64
+COPY ./arm64 ./arm64
+COPY ./scripts/bin.sh /bin.sh
+RUN ./bin.sh
+RUN rm -rf ./amd64 ./arm64
 ENTRYPOINT [ "bash", "-x", "/root/entrypoint.sh" ]
