@@ -3,7 +3,7 @@
   "private": true,
   "dependencies": {
     "@oomol/node-executor": "0.20.35",
-    "@oomol/oocana": "0.23.6",
+    "@oomol/oocana": "0.23.8",
     "@oomol/oocana-sdk": "0.22.0"
   }
 }
