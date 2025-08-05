@@ -2,11 +2,16 @@ name: layer export
 on:
   workflow_call:
   workflow_dispatch:
+  pull_request:
 jobs:
   export:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/oocana/oocana-runtime:latest
+      image: ghcr.io/oomol/oocana-runtime:latest
+
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
       options: --privileged
       volumes:
         - ${{github.workspace}}:/github/workspace
@@ -22,15 +27,16 @@ jobs:
             && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
             && sudo apt update \
             && sudo apt install gh -y
-      - name: login gh
-        run: |
-          gh auth login --with-token < ${{ secrets.GITHUB_TOKEN }}
       - name: checkout repository
         run: |
           gh repo clone ${{ github.repository }} -- --depth 1
-      # - name: create package layer
-      #   run: |
-      #     oocana create layer github/workspace
-      # - name: export package layer
-      #   run: |
-      #     oocana export layer github/workspace /github/workspace/export
+        env:
+          GH_TOKEN: ${{ secrets.github_token }}
+      - name: create package layer
+        if: ${{ github.event_name == 'workflow_call' }}
+        run: |
+          oocana create layer $(pwd)/${{github.event.repository.name}}
+      - name: export package layer
+        if: ${{ github.event_name == 'workflow_call' }}
+        run: |
+          oocana export layer $(pwd)/${{github.event.repository.name}} /github/workspace/export
