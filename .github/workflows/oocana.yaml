@@ -33,8 +33,10 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.github_token }}
       - name: create package layer
+        if: ${{ github.event_name == 'workflow_call' }}
         run: |
           oocana create layer $(pwd)/${{github.event.repository.name}}
       - name: export package layer
+        if: ${{ github.event_name == 'workflow_call' }}
         run: |
           oocana export layer $(pwd)/${{github.event.repository.name}} /github/workspace/export
