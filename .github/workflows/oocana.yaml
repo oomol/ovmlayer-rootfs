@@ -32,9 +32,9 @@ jobs:
           gh repo clone ${{ github.repository }} -- --depth 1
         env:
           GH_TOKEN: ${{ secrets.github_token }}
-      # - name: create package layer
-      #   run: |
-      #     oocana create layer github/workspace
-      # - name: export package layer
-      #   run: |
-      #     oocana export layer github/workspace /github/workspace/export
+      - name: create package layer
+        run: |
+          oocana create layer $(pwd)/${{github.event.repository.name}}
+      - name: export package layer
+        run: |
+          oocana export layer $(pwd)/${{github.event.repository.name}} /github/workspace/export
