@@ -2,11 +2,15 @@ name: layer export
 on:
   workflow_call:
   workflow_dispatch:
+  pull_request:
 jobs:
   export:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/oocana/oocana-runtime:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
       options: --privileged
       volumes:
         - ${{github.workspace}}:/github/workspace
