@@ -7,7 +7,8 @@ jobs:
   export:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/oocana/oocana-runtime:latest
+      image: ghcr.io/oomol/oocana-runtime:latest
+
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
