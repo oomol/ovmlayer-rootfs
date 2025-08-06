@@ -29,23 +29,17 @@ runs:
       id: oocana-version
       run: |
         if [ "${{ inputs.oocana }}" = "latest" ]; then
-          version=$(gh release list --repo oomol/oocana-rust | head -n 1 | awk '{print $1}')
+          echo "version=$(gh release list --repo oomol/oocana-rust | head -n 1 | awk '{print $1}')" >> $GITHUB_OUTPUT
         else
-          version="${{ inputs.oocana }}"
+          echo "version=${{ inputs.oocana }}" >> $GITHUB_OUTPUT
         fi
-        echo "oocana=$version" >> $GITHUB_OUTPUT
       env:
         GH_TOKEN: ${{ inputs.token }}
       shell: bash
     - name: setup oocana cli
       run: |
-        # Determine which oocana version to use
-        if [ "${{ inputs.oocana }}" = "latest" ]; then
-          version="${{ steps.oocana-version.outputs.oocana }}"
-        else
-          version="${{ inputs.oocana }}"
-        fi
-        echo "Using oocana version: $version"
+        version=${{ steps.oocana-version.outputs.version }}
+        echo $version
         if [ "${{ inputs.architecture }}" = "amd64" ]; then
           gh release download $version --repo oomol/oocana-rust --pattern "oocana-cli-x86_64-unknown-linux-gnu.tar.gz" --clobber -O oocana-cli-${{ inputs.architecture }}.tar.gz
           tar -xf oocana-cli-${{ inputs.architecture }}.tar.gz -C ${{ runner.temp }}
