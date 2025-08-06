@@ -32,7 +32,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, ubuntu-24.04-arm]
     runs-on: ${{ matrix.os }}
-    if: ${{ github.event_name != 'workflow_call' }}
+    if: ${{ github.event.repository.full_name == 'oomol/ovmlayer-rootfs' }}
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/layer
@@ -40,7 +40,7 @@ jobs:
           architecture: ${{ (runner.arch == 'ARM64' || runner.arch == 'ARM') && 'arm64' || 'amd64' }}
 
   export-layer:
-    if: ${{ github.event_name == 'workflow_call' }}
+    if: ${{ github.event.repository.full_name != 'oomol/ovmlayer-rootfs' }} # https://github.com/actions/runner/issues/3146
     strategy:
       matrix:
         os: [ubuntu-latest, ubuntu-24.04-arm]
