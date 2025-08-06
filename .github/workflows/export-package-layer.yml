@@ -2,7 +2,7 @@ name: export-package-layer
 on:
   pull_request:
     paths:
-      - .github/workflows/layer-export.yml
+      - .github/workflows/export-package-layer.yml
       - .github/actions/layer/**
   workflow_call:
     secrets:
@@ -25,11 +25,6 @@ on:
         required: false
         type: string
         default: "studio-rootfs@1.0.0"
-      package:
-        description: "Package to export"
-        required: true
-        type: string
-        default: "oomol/oocana-rust"
 
 jobs:
   test-layer-action:
@@ -65,10 +60,10 @@ jobs:
           architecture: ${{ steps.arch.outputs.architecture }}
       - name: create layer
         run: |
-          oocana create layer ${{ inputs.package }}
+          oocana create layer ${{ github.workspace }}
       - name: export layer
         run: |
-          oocana export layer ${{ inputs.package }} ${{ runner.temp }}/export
+          oocana export layer ${{ github.workspace }} ${{ runner.temp }}/export
 
       # TODO: change to upload when server api is ready
       - name: upload layer
