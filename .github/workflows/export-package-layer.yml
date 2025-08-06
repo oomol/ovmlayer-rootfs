@@ -60,10 +60,10 @@ jobs:
           architecture: ${{ steps.arch.outputs.architecture }}
       - name: create layer
         run: |
-          oocana create layer ${{ github.workspace }}
+          oocana package-layer create ${{ github.workspace }}
       - name: export layer
         run: |
-          oocana export layer ${{ github.workspace }} ${{ runner.temp }}/export
+          oocana package-layer export ${{ github.workspace }} ${{ runner.temp }}/export
 
       # TODO: change to upload when server api is ready
       - name: upload layer
