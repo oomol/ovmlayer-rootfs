@@ -82,35 +82,15 @@ jobs:
       - name: export layer
         run: |
           oocana package-layer export ${{ github.workspace }} ${{ runner.temp }}/export
-      # - name: Upload layer # used for debug
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: ${{ steps.arch.outputs.architecture }}-layer
-      #     path: ${{ runner.temp }}/export
       - name: Zip layer
         run: |
           cd ${{ runner.temp }}/export
           zip -r ${{ steps.arch.outputs.architecture }}-layer.zip .
-      - name: Install OIDC Client from Core Package
-        run: npm install @actions/core@1.11.1 @actions/http-client
-        shell: bash
-      - name: Get Id Token
-        uses: actions/github-script@v7
-        id: id_token
+      - name: Upload layer # used for debug
+        uses: actions/upload-artifact@v4
         with:
-          script: |
-            const coredemo = require('@actions/core')
-            let id_token = await coredemo.getIDToken()
-            coredemo.setOutput('id_token', id_token)
-      - name: Get url
-        run: |
-            response=$(curl --fail-with-body -X POST -H "Authorization: github-action-${{ steps.id_token.outputs.id_token }}" -H "Content-Type: application/json" -d '{"fileKey": "${{ steps.arch.outputs.architecture }}-layer.zip"}' ${{ env.REGISTRY_URL }}/-/oomol/packages/${{ inputs.package-name }}/${{ inputs.version }}/layers/presigned-upload-url)
-            echo "response=$response" >> $GITHUB_OUTPUT
-        id: get_url
-      - name: Upload layer
-        run: |
-          curl --fail-with-body -X PUT -H "Content-Type: application/octet-stream" -T ${{ runner.temp }}/export/${{ steps.arch.outputs.architecture }}-layer.zip "${{ steps.get_url.outputs.response }}"
-          echo "url=${{ env.REGISTRY_URL }}/-/oomol/packages/${{ inputs.package-name }}/${{ inputs.version }}/layers/${{ steps.arch.outputs.architecture }}-layer.zip" >> $GITHUB_OUTPUT
+          name: ${{ steps.arch.outputs.architecture }}-layer
+          path: ${{ runner.temp }}/export/${{ steps.arch.outputs.architecture }}-layer.zip
 
   post-layer-json:
     if: ${{ github.event.repository.full_name != 'oomol/ovmlayer-rootfs' }} #
@@ -120,6 +100,12 @@ jobs:
       id-token: write
     needs: [export-layer]
     steps:
+      - name: download layer
+        uses: actions/download-artifact@v5
+        with:
+          merge-multiple: true
+      - name: ls
+        run: ls -la
       - name: Install OIDC Client from Core Package
         run: npm install @actions/core@1.11.1 @actions/http-client
         shell: bash
@@ -131,10 +117,3 @@ jobs:
             const coredemo = require('@actions/core')
             let id_token = await coredemo.getIDToken()
             coredemo.setOutput('id_token', id_token)
-      - name: Post Layer files
-        run: |
-          echo "Layer exported successfully."
-          curl --fail-with-body -X PUT -H "Content-Type: application/json" -H "Authorization: github-action-${{ steps.id_token.outputs.id_token }}" -d '{"amd64": "${{ env.STATIC_URL }}/-/oomol/packages/${{ inputs.package-name }}/${{ inputs.version }}/layers/amd64-layer.zip", "arm64": "${{ env.STATIC_URL }}/-/oomol/packages/${{ inputs.package-name }}/${{ inputs.version }}/layers/arm64-layer.zip"}' ${{ env.REGISTRY_URL }}/-/oomol/packages/${{ inputs.package-name }}/${{ inputs.version }}/layers/file-paths
-      - name: get
-        run: |
-          curl --fail-with-body -H "Authorization: github-action-${{ steps.id_token.outputs.id_token }}" -H "Content-Type: application/json" https://registry.oomol.dev/-/oomol/packages/layer-example/0.0.1/layers/file-paths
