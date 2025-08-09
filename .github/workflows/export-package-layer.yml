@@ -118,8 +118,12 @@ jobs:
       # TODO: refactor it to a nodejs composite action
       - name: Upload Layer
         run: |
-            for layer_zip in $pwd/*; do
-              echo "Processing $layer_zip"
-              response=$(curl --fail-with-body -X POST -H "Authorization: github-action-${{ steps.id_token.outputs.id_token }}" -H "Content-Type: application/json" -d "{\"fileKey\": \"$layer_zip\"}" ${{ env.REGISTRY_URL }}/-/oomol/packages/${{ inputs.package-name }}/${{ inputs.version }}/layers/presigned-upload-url)
-              curl --fail-with-body -X PUT -H "Content-Type: application/octet-stream" -T ./$layer_zip "$response"
+            set -x
+            for layer_zip in $(pwd)/*; do
+              if [ -f "$layer_zip" ]; then
+                echo "Processing $layer_zip"
+                file=$(basename $layer_zip)
+                response=$(curl --fail-with-body -X POST -H "Authorization: github-action-${{ steps.id_token.outputs.id_token }}" -H "Content-Type: application/json" -d "{\"fileKey\": \"$file\"}" ${{ env.REGISTRY_URL }}/-/oomol/packages/${{ inputs.package-name }}/${{ inputs.version }}/layers/presigned-upload-url)
+                curl --fail-with-body -X PUT -H "Content-Type: application/octet-stream" -T ./$file "$response"
+              fi
             done
