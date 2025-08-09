@@ -44,12 +44,27 @@ permissions:
   id-token: write
 
 jobs:
+  argument-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: check argument
+        run: |
+          if [ -z "${{ inputs.package-name }}" ]; then
+            echo "Error: package-name is required"
+            exit 1
+          fi
+          if [ -z "${{ inputs.version }}" ]; then
+            echo "Error: version is required"
+            exit 1
+          fi
+      # TODO: also check permissions
   export-layer:
     if: ${{ github.event.repository.full_name != 'oomol/ovmlayer-rootfs' }} # https://github.com/actions/runner/issues/3146
     strategy:
       matrix:
         os: [ubuntu-latest, ubuntu-24.04-arm]
     runs-on: ${{ matrix.os }}
+    needs: [argument-check]
     steps:
       - name: architecture
         run: |
