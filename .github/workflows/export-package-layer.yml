@@ -92,6 +92,7 @@ jobs:
           name: ${{ steps.arch.outputs.architecture }}-layer
           path: ${{ runner.temp }}/export/${{ steps.arch.outputs.architecture }}-layer.zip
 
+  # TODO: refactor it to a nodejs composite action
   post-layer-json:
     if: ${{ github.event.repository.full_name != 'oomol/ovmlayer-rootfs' }} #
     runs-on: ubuntu-latest
@@ -116,8 +117,7 @@ jobs:
             const coredemo = require('@actions/core')
             let id_token = await coredemo.getIDToken()
             coredemo.setOutput('id_token', id_token)
-      # TODO: refactor it to a nodejs composite action
-      - name: Upload Layer
+      - name: Upload Layer 
         run: |
             set -x
             cd ${{ runner.temp }}/export
@@ -129,3 +129,24 @@ jobs:
                 curl --fail-with-body -X PUT -H "Content-Type: application/octet-stream" -T ./$file "$response"
               fi
             done
+      - name: Post layer # {"key1": "file2", "key2": "file2"}
+        run: |
+          set -x
+          cd ${{ runner.temp }}/export
+          payload="{"
+          first=true
+          for layer_zip in $(pwd)/*; do
+            if [ -f "$layer_zip" ]; then
+              if [ "$first" = true ]; then
+                first=false
+              else
+                payload+=","
+              fi
+              file=$(basename "$layer_zip")
+              key=$(echo "$file" | sed 's/-layer\.zip$//')
+              payload+="\"$key\":\"$file\""
+            fi
+          done
+          payload+="}"
+          echo "Payload: $payload"
+          curl --fail-with-body -X PUT -H "Authorization: github-action-${{ steps.id_token.outputs.id_token }}" -H "Content-Type: application/json" -d "$payload" ${{ env.REGISTRY_URL }}/-/oomol/packages/${{ inputs.package-name }}/${{ inputs.version }}/layers/file-paths
