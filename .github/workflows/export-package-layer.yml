@@ -105,7 +105,9 @@ jobs:
         with:
           merge-multiple: true
       - name: ls
-        run: ls -la
+        run: |
+          echo "layers==$(ls)" >> GITHUB_OUTPUT
+        id: export_layers
       - name: Install OIDC Client from Core Package
         run: npm install @actions/core@1.11.1 @actions/http-client
         shell: bash
@@ -117,3 +119,11 @@ jobs:
             const coredemo = require('@actions/core')
             let id_token = await coredemo.getIDToken()
             coredemo.setOutput('id_token', id_token)
+      # TODO: refactor it to a nodejs composite action
+      - name: Upload Layer
+        run: |
+            for layer_zip in ${{ steps.export_layers.outputs.layers }}; do
+              echo "Processing $layer_zip"
+              response=$(curl --fail-with-body -X POST -H "Authorization: github-action-${{ steps.id_token.outputs.id_token }}" -H "Content-Type: application/json" -d "{\"fileKey\": \"$layer_zip\"}" ${{ env.REGISTRY_URL }}/-/oomol/packages/${{ inputs.package-name }}/${{ inputs.version }}/layers/presigned-upload-url)
+              curl --fail-with-body -X PUT -H "Content-Type: application/octet-stream" -T ./$layer_zip "$response"
+            done
