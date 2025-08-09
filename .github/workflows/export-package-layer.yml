@@ -103,6 +103,7 @@ jobs:
       - name: download layer
         uses: actions/download-artifact@v5
         with:
+          path: ${{ runner.temp }}/export
           merge-multiple: true
       - name: Install OIDC Client from Core Package
         run: npm install @actions/core@1.11.1 @actions/http-client
@@ -119,6 +120,7 @@ jobs:
       - name: Upload Layer
         run: |
             set -x
+            cd ${{ runner.temp }}/export
             for layer_zip in $(pwd)/*; do
               if [ -f "$layer_zip" ]; then
                 echo "Processing $layer_zip"
