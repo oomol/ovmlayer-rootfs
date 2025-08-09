@@ -106,7 +106,7 @@ jobs:
           merge-multiple: true
       - name: ls
         run: |
-          echo "layers==$(ls)" >> GITHUB_OUTPUT
+          echo "layers==$(ls)" >> $GITHUB_OUTPUT
         id: export_layers
       - name: Install OIDC Client from Core Package
         run: npm install @actions/core@1.11.1 @actions/http-client
