@@ -3,7 +3,6 @@ on:
   pull_request:
     paths:
       - .github/workflows/export-package-layer.yml
-      - .github/actions/layer/**
   workflow_call:
     secrets:
       token:
@@ -45,18 +44,6 @@ permissions:
   id-token: write
 
 jobs:
-  test-layer-action:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, ubuntu-24.04-arm]
-    runs-on: ${{ matrix.os }}
-    if: ${{ github.event.repository.full_name == 'oomol/ovmlayer-rootfs' }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/layer
-        with:
-          architecture: ${{ (runner.arch == 'ARM64' || runner.arch == 'ARM') && 'arm64' || 'amd64' }}
-
   export-layer:
     if: ${{ github.event.repository.full_name != 'oomol/ovmlayer-rootfs' }} # https://github.com/actions/runner/issues/3146
     strategy:
@@ -86,14 +73,14 @@ jobs:
         run: |
           cd ${{ runner.temp }}/export
           zip -r ${{ steps.arch.outputs.architecture }}-layer.zip .
-      - name: Upload layer # used for debug
+      - name: Upload layer
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.arch.outputs.architecture }}-layer
           path: ${{ runner.temp }}/export/${{ steps.arch.outputs.architecture }}-layer.zip
 
   # TODO: refactor it to a nodejs composite action
-  post-layer-json:
+  upload-layer:
     if: ${{ github.event.repository.full_name != 'oomol/ovmlayer-rootfs' }} #
     runs-on: ubuntu-latest
     permissions:
