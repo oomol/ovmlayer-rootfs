@@ -20,7 +20,7 @@ inputs:
   rootfs:
     description: "rootfs tar"
     required: false
-    default: "studio-rootfs@1.0.0"
+    default: "studio-rootfs@1.1.0"
 
 runs:
   using: "composite"
