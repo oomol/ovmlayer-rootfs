@@ -45,7 +45,8 @@ permissions:
   id-token: write
 
 jobs:
-  argument-check:
+  arguments-check:
+    if: ${{ github.event.repository.full_name != 'oomol/ovmlayer-rootfs' }}
     runs-on: ubuntu-latest
     steps:
       - name: check argument
@@ -58,7 +59,6 @@ jobs:
             echo "Error: version is required"
             exit 1
           fi
-      # TODO: also check permissions
   export-layer:
     if: ${{ github.event.repository.full_name != 'oomol/ovmlayer-rootfs' }} # https://github.com/actions/runner/issues/3146
     strategy:
