@@ -34,10 +34,11 @@ on:
         description: "Version of the package to create."
         required: true
         type: string
-
-env:
-  REGISTRY_URL: https://registry.oomol.dev
-  STATIC_URL: https://static.oomol.com
+      registry:
+        description: "Container registry to use for publishing the package."
+        required: false
+        default: "https://registry.oomol.com"
+        type: string
 
 permissions:
   contents: read
@@ -127,7 +128,7 @@ jobs:
               if [ -f "$layer_zip" ]; then
                 echo "Processing $layer_zip"
                 file=$(basename $layer_zip)
-                response=$(curl --fail-with-body -X POST -H "Authorization: github-action-${{ steps.id_token.outputs.id_token }}" -H "Content-Type: application/json" -d "{\"fileKey\": \"$file\"}" ${{ env.REGISTRY_URL }}/-/oomol/packages/${{ inputs.package-name }}/${{ inputs.version }}/layers/presigned-upload-url)
+                response=$(curl --fail-with-body -X POST -H "Authorization: github-action-${{ steps.id_token.outputs.id_token }}" -H "Content-Type: application/json" -d "{\"fileKey\": \"$file\"}" ${{ inputs.registry }}/-/oomol/packages/${{ inputs.package-name }}/${{ inputs.version }}/layers/presigned-upload-url)
                 curl --fail-with-body -X PUT -H "Content-Type: application/octet-stream" -T ./$file "$response"
               fi
             done
@@ -151,4 +152,4 @@ jobs:
           done
           payload+="}"
           echo "Payload: $payload"
-          curl --fail-with-body -X PUT -H "Authorization: github-action-${{ steps.id_token.outputs.id_token }}" -H "Content-Type: application/json" -d "$payload" ${{ env.REGISTRY_URL }}/-/oomol/packages/${{ inputs.package-name }}/${{ inputs.version }}/layers/file-paths
+          curl --fail-with-body -X PUT -H "Authorization: github-action-${{ steps.id_token.outputs.id_token }}" -H "Content-Type: application/json" -d "$payload" ${{ inputs.registry }}/-/oomol/packages/${{ inputs.package-name }}/${{ inputs.version }}/layers/file-paths
