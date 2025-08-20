@@ -65,7 +65,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, ubuntu-24.04-arm]
     runs-on: ${{ matrix.os }}
-    needs: [argument-check]
+    needs: [arguments-check]
     steps:
       - name: architecture
         run: |
