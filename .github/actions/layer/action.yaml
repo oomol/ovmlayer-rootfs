@@ -41,12 +41,12 @@ runs:
         version=${{ steps.oocana-version.outputs.version }}
         echo $version
         if [ "${{ inputs.architecture }}" = "amd64" ]; then
-          gh release download $version --repo oomol/oocana-rust --pattern "oocana-cli-x86_64-unknown-linux-gnu.tar.gz" --clobber -O oocana-cli-${{ inputs.architecture }}.tar.gz
-          tar -xf oocana-cli-${{ inputs.architecture }}.tar.gz -C ${{ runner.temp }}
+          gh release download $version --repo oomol/oocana-rust --pattern "oocana-cli-x86_64-unknown-linux-gnu.tar.gz" --clobber -O ${{ runner.temp }}/oocana-cli-${{ inputs.architecture }}.tar.gz
+          tar -xf ${{ runner.temp }}/oocana-cli-${{ inputs.architecture }}.tar.gz -C ${{ runner.temp }}
           sudo mv ${{ runner.temp }}/oocana-cli-x86_64-unknown-linux-gnu /usr/bin/oocana
         elif [ "${{ inputs.architecture }}" = "arm64" ]; then
-          gh release download $version --repo oomol/oocana-rust --pattern "oocana-cli-aarch64-unknown-linux-gnu.tar.gz" --clobber -O oocana-cli-${{ inputs.architecture }}.tar.gz
-          tar -xf oocana-cli-${{ inputs.architecture }}.tar.gz -C ${{ runner.temp }}
+          gh release download $version --repo oomol/oocana-rust --pattern "oocana-cli-aarch64-unknown-linux-gnu.tar.gz" --clobber -O ${{ runner.temp }}/oocana-cli-${{ inputs.architecture }}.tar.gz
+          tar -xf ${{ runner.temp }}/oocana-cli-${{ inputs.architecture }}.tar.gz -C ${{ runner.temp }}
           sudo mv ${{ runner.temp }}/oocana-cli-aarch64-unknown-linux-gnu /usr/bin/oocana
         fi
       shell: bash
@@ -55,9 +55,9 @@ runs:
     - name: download ovmlayer
       run: |
         if [ "${{ inputs.architecture }}" = "amd64" ]; then
-          gh release download ${{ inputs.ovmlayer }} --repo oomol/ovmlayer-rootfs --pattern "ovmlayer_amd64.tar.zst" --clobber -O ovmlayer.tar.zst
+          gh release download ${{ inputs.ovmlayer }} --repo oomol/ovmlayer-rootfs --pattern "ovmlayer_amd64.tar.zst" --clobber -O ${{ runner.temp }}/ovmlayer.tar.zst
         elif [ "${{ inputs.architecture }}" = "arm64" ]; then
-          gh release download ${{ inputs.ovmlayer }} --repo oomol/ovmlayer-rootfs --pattern "ovmlayer_arm64.tar.zst" --clobber -O ovmlayer.tar.zst
+          gh release download ${{ inputs.ovmlayer }} --repo oomol/ovmlayer-rootfs --pattern "ovmlayer_arm64.tar.zst" --clobber -O ${{ runner.temp }}/ovmlayer.tar.zst
         fi
       shell: bash
       env:
@@ -65,7 +65,7 @@ runs:
 
     - name: extract ovmlayer
       run: |
-        zstd -d ovmlayer.tar.zst -o ${{ runner.temp }}/ovmlayer.tar
+        zstd -d ${{ runner.temp }}/ovmlayer.tar.zst -o ${{ runner.temp }}/ovmlayer.tar
         tar -xf ${{ runner.temp }}/ovmlayer.tar -C ${{ runner.temp }}
         sudo mv ${{ runner.temp }}/ovmlayer/* /usr/bin/
       shell: bash
