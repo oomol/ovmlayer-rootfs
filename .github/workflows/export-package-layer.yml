@@ -134,7 +134,6 @@ jobs:
       - name: Post layer # {"key1": "file2", "key2": "file2"}
         run: |
           set -x
-          cd ${{ runner.temp }}/export
           payload="{\"amd64\": \"amd64-layer.zip\",\"arm64\": \"arm64-layer.zip\"}"
           echo "Payload: $payload"
           curl --fail-with-body -X PUT -H "Authorization: github-action-${{ steps.id_token.outputs.id_token }}" -H "Content-Type: application/json" -d "$payload" ${{ inputs.registry }}/-/oomol/packages/${{ inputs.package-name }}/${{ inputs.version }}/layers/file-paths
