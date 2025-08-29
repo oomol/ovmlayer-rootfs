@@ -43,7 +43,7 @@ jobs:
       - name: upload layer
         uses: actions/upload-artifact@v4
         with:
-          name: executor-layer
+          name: ${{steps.arch.outputs.architecture}}-executor-layer
           path: ${{runner.temp}}/${{steps.arch.outputs.architecture}}-executor.tar
           retention-days: 1
       - name: layer-info
