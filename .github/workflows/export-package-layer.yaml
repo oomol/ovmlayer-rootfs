@@ -1,8 +1,9 @@
 name: export-package-layer
+# TODO: this workflow can not be tested now
 on:
   pull_request:
     paths:
-      - .github/workflows/export-package-layer.yml
+      - .github/workflows/export-package-layer.yaml
   workflow_call:
     secrets:
       token:
