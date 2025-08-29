@@ -31,15 +31,15 @@ jobs:
       - name: create layer
         run: |
           layer=executor
-          ovmlayer create $layer
-          ovmlayer merge -l $layer -m m1
-          ovmlayer run --workdir=/root \
+          sudo ovmlayer create $layer
+          sudo ovmlayer merge -l $layer -m m1
+          sudo ovmlayer run --workdir=/root \
             --mount type=bind,source=${{ github.workspace }}/.scripts/install-executor.sh,dst=/root/install-executor.sh,nonrecursive \
             --mount type=bind,source=${{ github.workspace }}/requirements.txt,dst=/root/requirements.txt,nonrecursive \
             --mount type=bind,source=${{ github.workspace }}/package.json,dst=/root/package.json,nonrecursive \
             --merged-point m1 \
             "zsh"  "-i" "-c" "/root/install-executor.sh"
-          ovmlayer export --layer=$layer --dest=${{runner.temp}}/executor.tar
+          sudo ovmlayer export --layer=$layer --dest=${{runner.temp}}/executor.tar
       - name: upload layer
         uses: actions/upload-artifact@v4
         with:
