@@ -45,6 +45,7 @@ jobs:
         with:
           name: executor-layer
           path: ${{runner.temp}}/${{steps.arch.outputs.architecture}}-executor.tar
+          retention-days: 1
       - name: layer-info
         run: |
           echo "Python Dependencies:" > release.log
