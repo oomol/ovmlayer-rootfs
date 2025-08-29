@@ -1,17 +1,17 @@
-name: build studio rootfs
-# build studio rootfs on ubuntu-latest which contains oocana, python-executor, nodejs-executor, and ovmlayer
+name: build server base
+# build server base on ubuntu-latest which contains oocana, python-executor, nodejs-executor, and ovmlayer
 on:
   pull_request:
     paths:
-      - "layer.dockerfile"
-      - ".github/workflows/build-studio-rootfs.yaml"
+      - "server-base.dockerfile"
+      - ".github/workflows/build-server-base.yaml"
   push:
     tags:
-      - "studio-rootfs*"
+      - "server-base*"
   workflow_dispatch:
 
 jobs:
-  build-studio:
+  build-server-base:
     strategy:
       matrix:
         platforms: [linux/amd64,linux/arm64]
@@ -45,26 +45,26 @@ jobs:
           push: false
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          file: layer.dockerfile
+          file: server-base.dockerfile
           cache-from: type=gha
           platforms: ${{ matrix.platforms }}
           cache-to: type=gha,mode=max
           load: true
-      - name: export studio rootfs
+      - name: export server base rootfs
         run: |
           if [ ${{ matrix.platforms }} == "linux/amd64" ]; then
-            docker run --platform ${{ matrix.platforms }} -d --name amd64-studio-rootfs-export ghcr.io/${{ github.repository }}:local true
-            docker export amd64-studio-rootfs-export >> amd64-studio-rootfs.tar
+            docker run --platform ${{ matrix.platforms }} -d --name amd64-server-base-export ghcr.io/${{ github.repository }}:local true
+            docker export amd64-server-base-export >> amd64-server-base.tar
           else
-            docker run --platform ${{ matrix.platforms }} -d --name arm64-studio-rootfs-export ghcr.io/${{ github.repository }}:local true
-            docker export arm64-studio-rootfs-export >> arm64-studio-rootfs.tar
+            docker run --platform ${{ matrix.platforms }} -d --name arm64-server-base-export ghcr.io/${{ github.repository }}:local true
+            docker export arm64-server-base-export >> arm64-server-base.tar
           fi
       - name: tar-name
         run: |
           if [ ${{ matrix.platforms }} == "linux/amd64" ]; then
-            echo "tar=amd64-studio-rootfs.tar" >> $GITHUB_OUTPUT
+            echo "tar=amd64-server-base.tar" >> $GITHUB_OUTPUT
           else
-            echo "tar=arm64-studio-rootfs.tar" >> $GITHUB_OUTPUT
+            echo "tar=arm64-server-base.tar" >> $GITHUB_OUTPUT
           fi
         id: tar-name
       - name: Release
