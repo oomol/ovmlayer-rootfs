@@ -4,7 +4,7 @@ name: build server base
 on:
   pull_request:
     paths:
-      - ".github/workflows/build-server-base.yaml"
+      - ".github/workflows/build-server-base.yml"
       - "dockerfiles/server-base.dockerfile"
   push:
     tags:

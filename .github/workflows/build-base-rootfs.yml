@@ -5,7 +5,7 @@ name: build base rootfs
 on:
   pull_request:
     paths:
-      - ".github/workflows/build-base-rootfs.yaml"
+      - ".github/workflows/build-base-rootfs.yml"
       - "dockerfiles/base.dockerfile"
   push:
     tags:

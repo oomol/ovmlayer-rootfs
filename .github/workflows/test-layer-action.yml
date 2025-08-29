@@ -4,7 +4,7 @@ name: test-layer-action
 on:
   pull_request:
     paths:
-      - .github/workflows/test-layer-action.yaml
+      - .github/workflows/test-layer-action.yml
       - .github/actions/layer/*
 
 jobs:
