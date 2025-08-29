@@ -34,7 +34,7 @@ jobs:
           sudo ovmlayer create $layer
           sudo ovmlayer merge -l $layer -m m1
           sudo ovmlayer run --workdir=/root \
-            --mount type=bind,source=${{ github.workspace }}/.scripts/install-executor.sh,dst=/root/install-executor.sh,nonrecursive \
+            --mount type=bind,source=${{ github.workspace }}/scripts/install-executor.sh,dst=/root/install-executor.sh,nonrecursive \
             --mount type=bind,source=${{ github.workspace }}/requirements.txt,dst=/root/requirements.txt,nonrecursive \
             --mount type=bind,source=${{ github.workspace }}/package.json,dst=/root/package.json,nonrecursive \
             --merged-point m1 \
