@@ -4,6 +4,7 @@ name: "test download action"
 on:
   pull_request:
     paths:
+      - ".github/workflows/test-download-action.yml"
       - ".github/actions/download/*"
   workflow_dispatch:
     inputs:
