@@ -39,7 +39,7 @@ jobs:
             --mount type=bind,source=${{ github.workspace }}/package.json,dst=/root/package.json,nonrecursive \
             --merged-point m1 \
             "zsh"  "-i" "-c" "/root/install-executor.sh"
-          sudo ovmlayer export --layer=$layer --dest=${{runner.temp}}/executor.tar
+          sudo ovmlayer export --layer=$layer --dest=${{runner.temp}}/${{steps.arch.outputs.architecture}}-executor.tar
       - name: upload layer
         uses: actions/upload-artifact@v4
         with:
