@@ -10,6 +10,8 @@ on:
       - "scripts/bin.sh"
       - ".github/workflows/build-studio-image.yaml"
   push:
+    branches:
+      - main
     paths:
       - "dockerfiles/studio.dockerfile"
       - "package.json"
