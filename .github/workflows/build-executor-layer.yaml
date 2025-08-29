@@ -47,7 +47,9 @@ jobs:
         run: |
           echo "Python Dependencies:" > release.log
           cat requirements.txt >> release.log
-          echo "\nNode.js Dependencies:" >> release.log
+          echo "" >> release.log
+          echo "" >> release.log
+          echo "Node.js Dependencies:" >> release.log
           npm pkg get dependencies | grep -v "@oomol/oocana\"" >> release.log
       - name: Release
         uses: softprops/action-gh-release@v2
