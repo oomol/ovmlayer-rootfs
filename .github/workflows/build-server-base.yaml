@@ -4,7 +4,7 @@ name: build server base
 on:
   pull_request:
     paths:
-      - "server-base.dockerfile"
+      - "dockerfiles/server-base.dockerfile"
       - ".github/workflows/build-server-base.yaml"
   push:
     tags:
@@ -46,7 +46,7 @@ jobs:
           push: false
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          file: server-base.dockerfile
+          file: dockerfiles/server-base.dockerfile
           cache-from: type=gha
           platforms: ${{ matrix.platforms }}
           cache-to: type=gha,mode=max

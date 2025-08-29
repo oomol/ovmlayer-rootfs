@@ -4,7 +4,7 @@ name: build studio image
 on:
   pull_request:
     paths:
-      - "studio.dockerfile"
+      - "dockerfiles/studio.dockerfile"
       - "package.json"
       - "package-lock.json"
       - "scripts/bin.sh"
@@ -12,7 +12,7 @@ on:
       - ".github/workflows/build-studio-image.yaml"
   push:
     paths:
-      - "studio.dockerfile"
+      - "dockerfiles/studio.dockerfile"
       - "package.json"
       - "package-lock.json"
       - ".github/actions/ovmlayer/action.yml"
@@ -68,6 +68,6 @@ jobs:
           #   token=${{ secrets.GITHUB_TOKEN }}
           # secret-files: |
           #   npmrc=.npmrc
-          file: studio.dockerfile
+          file: dockerfiles/studio.dockerfile
           cache-from: type=gha
           cache-to: type=gha,mode=max

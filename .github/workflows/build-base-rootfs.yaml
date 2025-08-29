@@ -6,7 +6,7 @@ on:
   pull_request:
     paths:
       - ".github/workflows/build-base-rootfs.yaml"
-      - "base.dockerfile"
+      - "dockerfiles/base.dockerfile"
   push:
     tags:
       - "base-rootfs*"
@@ -35,7 +35,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
       - name: Docker build
         run: |
-          docker buildx build --load --platform ${{matrix.platform}} -t base-rootfs:local -f base.dockerfile .
+          docker buildx build --load --platform ${{matrix.platform}} -t base-rootfs:local -f dockerfiles/base.dockerfile .
       - name: get rootfs name
         id: rootfs
         run: |
