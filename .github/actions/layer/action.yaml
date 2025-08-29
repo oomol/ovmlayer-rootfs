@@ -1,5 +1,5 @@
 name: prepare oocana layer environment
-description: "Prepare ovmlayer environment for building Oocana layers"
+description: "Sets up complete oocana development environment with CLI tools, ovmlayer, and configured rootfs overlay"
 inputs:
   token:
     description: "GitHub token to use for downloading releases"
@@ -36,7 +36,7 @@ runs:
       env:
         GH_TOKEN: ${{ inputs.token }}
       shell: bash
-    - name: setup oocana cli
+    - name: download oocana cli to /usr/bin
       run: |
         version=${{ steps.oocana-version.outputs.version }}
         echo $version
@@ -63,14 +63,14 @@ runs:
       env:
         GH_TOKEN: ${{ inputs.token }}
 
-    - name: extract ovmlayer
+    - name: extract ovmlayer to /usr/bin
       run: |
         zstd -d ${{ runner.temp }}/ovmlayer.tar.zst -o ${{ runner.temp }}/ovmlayer.tar
         tar -xf ${{ runner.temp }}/ovmlayer.tar -C ${{ runner.temp }}
         sudo mv ${{ runner.temp }}/ovmlayer/* /usr/bin/
       shell: bash
 
-    - name: download studio rootfs
+    - name: download rootfs
       run: |
         gh release download ${{ inputs.rootfs }} --repo oomol/ovmlayer-rootfs --pattern "${{ inputs.architecture }}*" -O ${{ runner.temp }}/rootfs.tar
       shell: bash

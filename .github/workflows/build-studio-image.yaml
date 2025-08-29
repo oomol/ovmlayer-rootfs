@@ -1,19 +1,22 @@
 name: build studio image
+# Builds complete OOMOL studio runtime image with oocana CLI, ovmlayer, and all executors.
+# Creates production-ready multi-architecture container for direct oocana workflow execution.
 on:
   pull_request:
     paths:
-      - "studio.dockerfile"
+      - "dockerfiles/studio.dockerfile"
       - "package.json"
       - "package-lock.json"
       - "scripts/bin.sh"
-      - ".github/actions/ovmlayer/action.yml"
       - ".github/workflows/build-studio-image.yaml"
   push:
+    branches:
+      - main
     paths:
-      - "studio.dockerfile"
+      - "dockerfiles/studio.dockerfile"
       - "package.json"
       - "package-lock.json"
-      - ".github/actions/ovmlayer/action.yml"
+      - "scripts/bin.sh"
       - ".github/workflows/build-studio-image.yaml"
   workflow_dispatch:
 
@@ -66,6 +69,6 @@ jobs:
           #   token=${{ secrets.GITHUB_TOKEN }}
           # secret-files: |
           #   npmrc=.npmrc
-          file: studio.dockerfile
+          file: dockerfiles/studio.dockerfile
           cache-from: type=gha
           cache-to: type=gha,mode=max

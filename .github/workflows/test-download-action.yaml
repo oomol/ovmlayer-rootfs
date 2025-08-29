@@ -1,12 +1,11 @@
-name: "download ovmlayer environment"
-
+name: "test download action"
+# this workflow is for test download action 
 
 on:
   pull_request:
     paths:
-      - ".github/actions/ovmlayer/download.yml"
+      - ".github/actions/ovmlayer/*"
       - ".github/workflows/download.yaml"
-      - "studio.dockerfile"
   workflow_dispatch:
     inputs:
       architecture:
@@ -16,18 +15,6 @@ on:
           - amd64
           - arm64
         default: amd64
-      oocana:
-        description: "Oocana version to download"
-        required: false
-        default: v0.30.2
-      ovmlayer:
-        description: "Ovmlayer version to download"
-        required: false
-        default: ovmlayer@0.5.1
-      rootfs:
-        description: "Rootfs tar to download"
-        required: false
-        default: base-rootfs@0.4.0
 
 jobs:
   download-amd64:
