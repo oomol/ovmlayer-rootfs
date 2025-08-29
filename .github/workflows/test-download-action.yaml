@@ -1,5 +1,5 @@
 name: "test download action"
-# this workflows is for test download action 
+# this workflow is for test download action 
 
 on:
   pull_request:
