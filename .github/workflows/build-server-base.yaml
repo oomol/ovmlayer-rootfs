@@ -1,5 +1,6 @@
 name: build server base
-# build server base on ubuntu-latest which contains oocana, python-executor, nodejs-executor, and ovmlayer
+# Builds base server rootfs from upstream ghcr.io/oomol/server-base foundation image.
+# Creates multi-architecture tar archives for use as foundation layer in studio builds.
 on:
   pull_request:
     paths:

@@ -1,6 +1,6 @@
 name: build base rootfs
-# Build the base rootfs for the ovmlayer setup.
-# This workflow creates a multi-architecture (amd64, arm64) rootfs based on Ubuntu with Zsh.
+# Builds minimal Ubuntu-based rootfs with Zsh shell for ovmlayer layer testing.
+# Creates multi-architecture (amd64/arm64) tar archives for basic Linux container foundation.
 
 on:
   pull_request:

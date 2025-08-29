@@ -1,5 +1,5 @@
 name: download
-description: "Download ovmlayer and oocana environment"
+description: "Downloads oocana CLI, ovmlayer tools, and rootfs for multi-architecture container builds"
 inputs:
   token:
     description: "GitHub token"

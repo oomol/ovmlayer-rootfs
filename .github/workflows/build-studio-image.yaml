@@ -1,4 +1,6 @@
 name: build studio image
+# Builds complete OOMOL studio runtime image with oocana CLI, ovmlayer, and all executors.
+# Creates production-ready multi-architecture container for direct oocana workflow execution.
 on:
   pull_request:
     paths:
