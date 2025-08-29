@@ -55,7 +55,7 @@ jobs:
         with:
           files: ${{runner.temp}}/${{steps.arch.outputs.architecture}}-executor.tar
           token: ${{ secrets.GITHUB_TOKEN }}
-          body: release.log
+          body_path: release.log
           draft: false
           prerelease: false
           make_latest: true
