@@ -24,7 +24,7 @@ on:
         description: "rootfs tar"
         required: false
         type: string
-        default: "studio-rootfs@1.1.0"
+        default: "server-base@0.5.0"
 
       package-name:
         description: "Name of the package to create."
