@@ -3,7 +3,7 @@ name: export-package-layer
 on:
   pull_request:
     paths:
-      - .github/workflows/export-package-layer.yaml
+      - .github/workflows/export-package-layer.yml
   workflow_call:
     secrets:
       token:

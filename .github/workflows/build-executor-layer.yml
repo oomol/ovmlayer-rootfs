@@ -3,7 +3,7 @@ name: build executor layer
 on:
   pull_request:
     paths:
-      - ".github/workflows/build-executor-layer.yaml"
+      - ".github/workflows/build-executor-layer.yml"
       - "package.json"
       - "requirements.txt"
   push:

@@ -8,7 +8,7 @@ on:
       - "package.json"
       - "package-lock.json"
       - "scripts/bin.sh"
-      - ".github/workflows/build-studio-image.yaml"
+      - ".github/workflows/build-studio-image.yml"
   push:
     branches:
       - main
@@ -17,7 +17,7 @@ on:
       - "package.json"
       - "package-lock.json"
       - "scripts/bin.sh"
-      - ".github/workflows/build-studio-image.yaml"
+      - ".github/workflows/build-studio-image.yml"
   workflow_dispatch:
 
 jobs:
