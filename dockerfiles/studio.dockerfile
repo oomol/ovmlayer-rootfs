@@ -28,5 +28,5 @@ COPY ./arm64 ./arm64
 COPY ./scripts/bin.sh /root/bin.sh
 RUN TARGETPLATFORM=$TARGETPLATFORM BUILDPLATFORM=$BUILDPLATFORM /root/bin.sh
 RUN rm -rf ./amd64 ./arm64
-RUN rm -rf ./arm64 ./arm64
+RUN rm -rf ./amd64 ./arm64
 ENTRYPOINT [ "bash", "-x", "/root/entrypoint.sh" ]
