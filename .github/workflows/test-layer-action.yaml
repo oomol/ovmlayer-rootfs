@@ -1,9 +1,11 @@
-name: test-package-layer
+name: test-layer-action
+# This workflow is for testing the layer action
+
 on:
   pull_request:
     paths:
-      - .github/workflows/test-package-layer.yml
-      - .github/actions/layer/**
+      - .github/workflows/test-layer-action.yaml
+      - .github/actions/layer/*
 
 jobs:
   test-layer-action:
