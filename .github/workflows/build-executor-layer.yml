@@ -31,11 +31,11 @@ jobs:
           sudo ovmlayer create $layer
           sudo ovmlayer merge -l $layer -m m1
           sudo ovmlayer run --workdir=/root \
-            --mount type=bind,source=${{ github.workspace }}/scripts/install-executor.sh,dst=/root/install-executor.sh,nonrecursive \
-            --mount type=bind,source=${{ github.workspace }}/requirements.txt,dst=/root/requirements.txt,nonrecursive \
-            --mount type=bind,source=${{ github.workspace }}/package.json,dst=/root/package.json,nonrecursive \
+            --mount type=bind,source=${{ github.workspace }}/scripts/install-executor.sh,dst=/root/layer-deps/install-executor.sh,nonrecursive \
+            --mount type=bind,source=${{ github.workspace }}/requirements.txt,dst=/root/layer-deps/requirements.txt,nonrecursive \
+            --mount type=bind,source=${{ github.workspace }}/package.json,dst=/root/layer-deps/package.json,nonrecursive \
             --merged-point m1 \
-            "zsh"  "-i" "-c" "/root/install-executor.sh"
+            "zsh"  "-i" "-c" "/root/layer-deps/install-executor.sh"
           sudo ovmlayer export --layer=$layer --dest=${{runner.temp}}/${{steps.arch.outputs.architecture}}-executor.tar
       - name: upload layer
         uses: actions/upload-artifact@v4

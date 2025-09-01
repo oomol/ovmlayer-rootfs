@@ -1,7 +1,7 @@
 
 #!/bin/bash
 
-cd /root
+cd /root/layer-deps
 
 npm pkg get dependencies | sed -E 's/[[:space:]]*//g; s/[{}]//g; s/:/@/; s/"//g; s/,//g' | while read -r package; do
     if [[ "$package" == "@oomol/oocana@"* ]]; then
@@ -11,7 +11,7 @@ npm pkg get dependencies | sed -E 's/[[:space:]]*//g; s/[{}]//g; s/:/@/; s/"//g;
     npm install -g "$package"
 done
 
-pip install -r /root/requirements.txt
+pip install -r /root/layer-deps/requirements.txt
 
 npm cache clean --force
 pip cache purge
