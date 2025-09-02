@@ -80,6 +80,14 @@ jobs:
           ovmlayer: ${{ inputs.ovmlayer }}
           rootfs: ${{ inputs.rootfs }}
           architecture: ${{ steps.arch.outputs.architecture }}
+      - name: setup kernel
+        run: |
+          sudo bash -c 'echo Y > /sys/module/overlay/parameters/redirect_always_follow'
+          sudo bash -c 'echo Y > /sys/module/overlay/parameters/redirect_dir'
+          sudo bash -c 'echo Y > /sys/module/overlay/parameters/xino_auto'
+          sudo bash -c 'echo Y > /sys/module/overlay/parameters/metacopy'
+          sudo bash -c 'echo Y > /sys/module/overlay/parameters/check_copy_up'
+          sudo bash -c 'echo N > /sys/module/overlay/parameters/index'
       - name: create layer
         run: |
           oocana package-layer create ${{ github.workspace }}
