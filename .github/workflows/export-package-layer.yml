@@ -76,7 +76,7 @@ jobs:
       - uses: oomol/ovmlayer-rootfs/.github/actions/layer@main
         with:
           token: ${{ secrets.token }}
-          oocana: v0.30.12 # oocana build failed, just workaround
+          oocana: ${{ inputs.oocana }}
           ovmlayer: ${{ inputs.ovmlayer }}
           rootfs: ${{ inputs.rootfs }}
           architecture: ${{ steps.arch.outputs.architecture }}
