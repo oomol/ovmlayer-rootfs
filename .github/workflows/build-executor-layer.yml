@@ -21,7 +21,7 @@ jobs:
           echo "architecture=${{ (runner.arch == 'ARM64' || runner.arch == 'ARM') && 'arm64' || 'amd64' }}" >> $GITHUB_OUTPUT
         id: arch
       - uses: actions/checkout@v4
-      - uses: oomol/ovmlayer-rootfs/.github/actions/layer@main
+      - uses: oomol/ovmlayer-rootfs/.github/actions/oocana-runtime@main
         with:
           token: ${{ github.token }}
           architecture: ${{ steps.arch.outputs.architecture }}
