@@ -26,7 +26,7 @@ runs:
   using: "composite"
   steps:
     - name: Fetch binaries to workspace
-      uses: ./.github/actions/fetch
+      uses: oomol/ovmlayer-rootfs/.github/actions/fetch@main
       with:
         token: ${{ inputs.token }}
         architecture: ${{ inputs.architecture }}
