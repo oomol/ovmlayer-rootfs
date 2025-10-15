@@ -4,7 +4,7 @@ name: "test build-context action"
 on:
   pull_request:
     paths:
-      - ".github/workflows/test-download-action.yml"
+      - ".github/workflows/test-build-context.yml"
       - ".github/actions/build-context/*"
       - ".github/actions/fetch/*"
   workflow_dispatch:
