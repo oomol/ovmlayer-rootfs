@@ -1,0 +1,114 @@
+name: fetch
+description: "Fetches oocana CLI, ovmlayer tools, and rootfs - core download logic without installation assumptions"
+inputs:
+  token:
+    description: "GitHub token"
+    required: true
+    default: ${{ github.token }}
+  architecture:
+    description: "architecture, either amd64 or arm64"
+    required: true
+  destination:
+    description: "Destination directory for downloaded files"
+    required: true
+  oocana:
+    description: "oocana tag (supports 'latest' or specific version like v0.30.2)"
+    required: false
+    default: v0.30.2
+  ovmlayer:
+    description: "ovmlayer version"
+    required: false
+    default: ovmlayer@0.5.1
+  rootfs:
+    description: "rootfs tar"
+    required: false
+    default: "server-base@0.5.0"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Validate architecture
+      run: |
+        if [ "${{ inputs.architecture }}" != "amd64" ] && [ "${{ inputs.architecture }}" != "arm64" ]; then
+          echo "Invalid architecture: ${{ inputs.architecture }}"
+          exit 1
+        fi
+      shell: bash
+
+    - name: Resolve oocana version
+      id: oocana-version
+      run: |
+        if [ "${{ inputs.oocana }}" = "latest" ]; then
+          version=$(gh release list --repo oomol/oocana-rust | head -n 1 | awk '{print $1}')
+          echo "version=$version" >> $GITHUB_OUTPUT
+          echo "Resolved latest oocana version: $version"
+        else
+          echo "version=${{ inputs.oocana }}" >> $GITHUB_OUTPUT
+          echo "Using specified oocana version: ${{ inputs.oocana }}"
+        fi
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+      shell: bash
+
+    - name: Set architecture-specific variables
+      id: arch-vars
+      run: |
+        if [ "${{ inputs.architecture }}" = "amd64" ]; then
+          echo "oocana_binary=oocana-cli-x86_64-unknown-linux-gnu" >> $GITHUB_OUTPUT
+          echo "ovmlayer_pattern=ovmlayer_amd64.tar.zst" >> $GITHUB_OUTPUT
+        else
+          echo "oocana_binary=oocana-cli-aarch64-unknown-linux-gnu" >> $GITHUB_OUTPUT
+          echo "ovmlayer_pattern=ovmlayer_arm64.tar.zst" >> $GITHUB_OUTPUT
+        fi
+      shell: bash
+
+    - name: Create destination directory
+      run: mkdir -p "${{ inputs.destination }}"
+      shell: bash
+
+    - name: Download oocana CLI
+      run: |
+        gh release download ${{ steps.oocana-version.outputs.version }} \
+          --repo oomol/oocana-rust \
+          --pattern "${{ steps.arch-vars.outputs.oocana_binary }}.tar.gz" \
+          --clobber \
+          -O ${{ runner.temp }}/oocana-cli.tar.gz
+        tar -xf ${{ runner.temp }}/oocana-cli.tar.gz -C ${{ runner.temp }}
+        mv ${{ runner.temp }}/${{ steps.arch-vars.outputs.oocana_binary }} ${{ inputs.destination }}/oocana
+        chmod +x ${{ inputs.destination }}/oocana
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+
+    - name: Download ovmlayer
+      run: |
+        gh release download ${{ inputs.ovmlayer }} \
+          --repo oomol/ovmlayer-rootfs \
+          --pattern "${{ steps.arch-vars.outputs.ovmlayer_pattern }}" \
+          --clobber \
+          -O ${{ runner.temp }}/ovmlayer.tar.zst
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+
+    - name: Extract ovmlayer
+      run: |
+        zstd -d ${{ runner.temp }}/ovmlayer.tar.zst -o ${{ runner.temp }}/ovmlayer.tar
+        tar -xf ${{ runner.temp }}/ovmlayer.tar -C ${{ inputs.destination }}
+      shell: bash
+
+    - name: Download rootfs
+      run: |
+        gh release download ${{ inputs.rootfs }} \
+          --repo oomol/ovmlayer-rootfs \
+          --pattern "${{ inputs.architecture }}*" \
+          -O ${{ inputs.destination }}/rootfs.tar
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+
+    - name: Show downloaded files
+      run: |
+        echo "Downloaded files to ${{ inputs.destination }}:"
+        ls -lh ${{ inputs.destination }}
+      shell: bash

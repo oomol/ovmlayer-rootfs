@@ -1,0 +1,52 @@
+name: oocana-runtime
+description: "Sets up oocana runtime environment - installs CLI tools to system paths and configures rootfs overlay for runner execution"
+inputs:
+  token:
+    description: "GitHub token to use for downloading releases"
+    required: true
+    default: ${{ github.token }}
+  architecture:
+    description: "Architecture to build. Defaults to amd64, can be amd64, arm64"
+    required: true
+    default: "amd64"
+  oocana:
+    description: "Oocana release tag to download. Defaults to latest"
+    required: false
+    default: "latest"
+  ovmlayer:
+    description: "Release tag or version of ovmlayer to download. Defaults to ovmlayer@0.5.1"
+    required: false
+    default: ovmlayer@0.5.1
+  rootfs:
+    description: "rootfs tar"
+    required: false
+    default: "server-base@0.5.0"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Fetch binaries to temp directory
+      uses: ./.github/actions/fetch
+      with:
+        token: ${{ inputs.token }}
+        architecture: ${{ inputs.architecture }}
+        destination: ${{ runner.temp }}/binaries
+        oocana: ${{ inputs.oocana }}
+        ovmlayer: ${{ inputs.ovmlayer }}
+        rootfs: ${{ inputs.rootfs }}
+
+    - name: Install binaries to system paths
+      run: |
+        sudo mv ${{ runner.temp }}/binaries/oocana /usr/bin/oocana
+        sudo mv ${{ runner.temp }}/binaries/ovmlayer/* /usr/bin/
+        echo "Installed binaries to /usr/bin:"
+        ls -lh /usr/bin/oocana /usr/bin/ovmlayer*
+      shell: bash
+
+    - name: Setup rootfs overlay
+      run: |
+        sudo ovmlayer setup dev \
+          --base-rootfs=${{ runner.temp }}/binaries/rootfs.tar \
+          --layer-disk=/root/tmp_over_desk
+        echo "Rootfs overlay configured"
+      shell: bash
