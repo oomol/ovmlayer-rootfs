@@ -1,11 +1,12 @@
-name: "test download action"
-# this workflow is for test download action 
+name: "test build-context action"
+# this workflow is for test build-context action
 
 on:
   pull_request:
     paths:
-      - ".github/workflows/test-download-action.yml"
-      - ".github/actions/download/*"
+      - ".github/workflows/test-build-context.yml"
+      - ".github/actions/build-context/*"
+      - ".github/actions/fetch/*"
   workflow_dispatch:
     inputs:
       architecture:
@@ -17,27 +18,27 @@ on:
         default: amd64
 
 jobs:
-  download-amd64:
+  test-amd64:
     runs-on: ubuntu-latest
     if: ${{ inputs.architecture == 'amd64' || github.event_name == 'pull_request' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download ovmlayer and oocana
-        uses: ./.github/actions/download
+      - name: Prepare build context
+        uses: ./.github/actions/build-context
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           architecture: amd64
-  download-arm64:
+  test-arm64:
     runs-on: ubuntu-24.04-arm
     if: ${{ inputs.architecture == 'arm64' || github.event_name == 'pull_request' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download ovmlayer and oocana
-        uses: ./.github/actions/download
+      - name: Prepare build context
+        uses: ./.github/actions/build-context
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           architecture: arm64
