@@ -39,12 +39,9 @@ runs:
       id: oocana-version
       run: |
         if [ "${{ inputs.oocana }}" = "latest" ]; then
-          version=$(gh release list --repo oomol/oocana-rust | head -n 1 | awk '{print $1}')
-          echo "version=$version" >> $GITHUB_OUTPUT
-          echo "Resolved latest oocana version: $version"
+          echo "version=$(gh release list --repo oomol/oocana-rust | head -n 1 | awk '{print $1}')" >> $GITHUB_OUTPUT
         else
           echo "version=${{ inputs.oocana }}" >> $GITHUB_OUTPUT
-          echo "Using specified oocana version: ${{ inputs.oocana }}"
         fi
       env:
         GH_TOKEN: ${{ inputs.token }}
