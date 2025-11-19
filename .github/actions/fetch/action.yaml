@@ -90,6 +90,7 @@ runs:
 
     - name: Extract ovmlayer
       run: |
+        rm -f ${{ runner.temp }}/ovmlayer.tar
         zstd -d ${{ runner.temp }}/ovmlayer.tar.zst -o ${{ runner.temp }}/ovmlayer.tar
         tar -xf ${{ runner.temp }}/ovmlayer.tar -C ${{ inputs.destination }}
       shell: bash
