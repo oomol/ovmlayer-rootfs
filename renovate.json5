@@ -1,36 +1,50 @@
 {
-    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "extends": ["config:recommended"],
-    "schedule": [
-      "* 0-17 * * 1-5", // 工作时间 UTC 时间 0-17 每小时跑一次
-      "* 0-12 * * 6,7" // 周末 UTC 时间 0,4,12 每小时跑一次
-    ],
-    "automerge": true,
-    "automergeStrategy": "squash",
-    "rangeStrategy": "pin",
-    "packageRules": [
-      {
-        "matchDepPatterns": [".*"],
-        "enabled": false
-      },
-      {
-        "matchDepPrefixes": ["@oomol"],
-        "groupName": "@oomol packages",
-        "labels": ["oomol packages"],
-        "enabled": true
-      },
-      {
-        "matchDatasources": ["docker"],
-        "versioning": "semver",
-        "enabled": true
-      },
-      {
-        "matchDepNames": ["oocana-python-executor", "oocana"],
-        "groupName": "oocana-python",
-        "labels": ["oocana-python"],
-        "enabled": true
-      }
-    ],
-    "npmrcMerge": true
-  }
-  
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: [
+    'config:recommended',
+  ],
+  schedule: [
+    '* 0-17 * * 1-5',
+    '* 0-12 * * 6,7',
+  ],
+  automerge: true,
+  automergeStrategy: 'squash',
+  rangeStrategy: 'pin',
+  packageRules: [
+    {
+      enabled: false,
+      matchDepNames: [
+        '/.*/',
+      ],
+    },
+    {
+      groupName: '@oomol packages',
+      labels: [
+        'oomol packages',
+      ],
+      enabled: true,
+      matchDepNames: [
+        '@oomol{/,}**',
+      ],
+    },
+    {
+      matchDatasources: [
+        'docker',
+      ],
+      versioning: 'semver',
+      enabled: true,
+    },
+    {
+      matchDepNames: [
+        'oocana-python-executor',
+        'oocana',
+      ],
+      groupName: 'oocana-python',
+      labels: [
+        'oocana-python',
+      ],
+      enabled: true,
+    },
+  ],
+  npmrcMerge: true,
+}
