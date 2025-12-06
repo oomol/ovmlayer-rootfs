@@ -1,0 +1,46 @@
+name: Test Actions
+# Tests all reusable GitHub Actions in this repository
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/test-actions.yml"
+      - ".github/actions/**"
+  workflow_dispatch:
+    inputs:
+      architecture:
+        description: "Architecture to test"
+        type: choice
+        options:
+          - amd64
+          - arm64
+          - both
+        default: both
+
+jobs:
+  test-oocana-runtime:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.os }}
+    if: ${{ github.event_name == 'pull_request' || inputs.architecture == 'both' || (inputs.architecture == 'amd64' && matrix.os == 'ubuntu-latest') || (inputs.architecture == 'arm64' && matrix.os == 'ubuntu-24.04-arm') }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/arch-detect
+        id: arch
+      - uses: ./.github/actions/oocana-runtime
+        with:
+          architecture: ${{ steps.arch.outputs.arch }}
+
+  test-build-context:
+    strategy:
+      matrix:
+        arch: [amd64, arm64]
+    runs-on: ${{ matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    if: ${{ github.event_name == 'pull_request' || inputs.architecture == 'both' || inputs.architecture == matrix.arch }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/build-context
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          architecture: ${{ matrix.arch }}

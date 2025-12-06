@@ -1,9 +1,9 @@
-name: export-package-layer
+name: Package Layer
 # TODO: this workflow can not be tested now
 on:
   pull_request:
     paths:
-      - .github/workflows/export-package-layer.yml
+      - .github/workflows/layer-package.yml
   workflow_call:
     secrets:
       token:
@@ -68,18 +68,16 @@ jobs:
     runs-on: ${{ matrix.os }}
     needs: [arguments-check]
     steps:
-      - name: architecture
-        run: |
-          echo "architecture=${{ (runner.arch == 'ARM64' || runner.arch == 'ARM') && 'arm64' || 'amd64' }}" >> $GITHUB_OUTPUT
-        id: arch
       - uses: actions/checkout@v4
+      - uses: ./.github/actions/arch-detect
+        id: arch
       - uses: oomol/ovmlayer-rootfs/.github/actions/oocana-runtime@main
         with:
           token: ${{ secrets.token }}
           oocana: ${{ inputs.oocana }}
           ovmlayer: ${{ inputs.ovmlayer }}
           rootfs: ${{ inputs.rootfs }}
-          architecture: ${{ steps.arch.outputs.architecture }}
+          architecture: ${{ steps.arch.outputs.arch }}
       - name: setup kernel
         run: |
           sudo bash -c 'echo Y > /sys/module/overlay/parameters/redirect_always_follow'
@@ -97,7 +95,7 @@ jobs:
       - name: Zip layer
         run: |
           cd ${{ runner.temp }}/export
-          zip -r ${{ steps.arch.outputs.architecture }}-layer.zip .
+          zip -r ${{ steps.arch.outputs.arch }}-layer.zip .
       - name: Install OIDC Client from Core Package
         run: npm install @actions/core@1.11.1 @actions/http-client
         shell: bash
@@ -112,8 +110,8 @@ jobs:
       - name: Upload layer
         run: |
           cd ${{ runner.temp }}/export
-          response=$(curl --fail-with-body -X POST -H "Authorization: github-action-${{ steps.id_token.outputs.id_token }}" -H "Content-Type: application/json" -d "{\"fileKey\": \"${{ steps.arch.outputs.architecture }}-layer.zip\"}" ${{ inputs.registry }}/-/oomol/packages/${{ inputs.package-name }}/${{ inputs.version }}/layers/presigned-upload-url)
-          curl --fail-with-body -X PUT -H "Content-Type: application/octet-stream" -T ./${{ steps.arch.outputs.architecture }}-layer.zip "$response"
+          response=$(curl --fail-with-body -X POST -H "Authorization: github-action-${{ steps.id_token.outputs.id_token }}" -H "Content-Type: application/json" -d "{\"fileKey\": \"${{ steps.arch.outputs.arch }}-layer.zip\"}" ${{ inputs.registry }}/-/oomol/packages/${{ inputs.package-name }}/${{ inputs.version }}/layers/presigned-upload-url)
+          curl --fail-with-body -X PUT -H "Content-Type: application/octet-stream" -T ./${{ steps.arch.outputs.arch }}-layer.zip "$response"
 
   # TODO: refactor it to a nodejs composite action
   upload-layer:
