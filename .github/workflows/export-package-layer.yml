@@ -1,0 +1,53 @@
+name: Package Layer (deprecated)
+# DEPRECATED: This workflow has been renamed to layer-package.yml
+# This file exists only for backward compatibility with external repositories.
+# Please update your workflow_call references to use layer-package.yml instead.
+
+on:
+  workflow_call:
+    secrets:
+      token:
+        description: "GitHub token to use for authentication"
+        required: true
+    inputs:
+      oocana:
+        description: "Oocana release tag to download. Defaults to latest"
+        required: false
+        type: string
+        default: "latest"
+      ovmlayer:
+        description: "Version of the ovmlayer package to use. Defaults to ovmlayer@0.5.1"
+        required: false
+        type: string
+        default: ovmlayer@0.5.1
+      rootfs:
+        description: "rootfs tar"
+        required: false
+        type: string
+        default: "server-base@0.5.0"
+      package-name:
+        description: "Name of the package to create."
+        required: true
+        type: string
+      version:
+        description: "Version of the package to create."
+        required: true
+        type: string
+      registry:
+        description: "Container registry to use for publishing the package."
+        required: false
+        default: "https://registry.oomol.com"
+        type: string
+
+jobs:
+  forward-to-new-workflow:
+    uses: ./.github/workflows/layer-package.yml
+    secrets:
+      token: ${{ secrets.token }}
+    with:
+      oocana: ${{ inputs.oocana }}
+      ovmlayer: ${{ inputs.ovmlayer }}
+      rootfs: ${{ inputs.rootfs }}
+      package-name: ${{ inputs.package-name }}
+      version: ${{ inputs.version }}
+      registry: ${{ inputs.registry }}
