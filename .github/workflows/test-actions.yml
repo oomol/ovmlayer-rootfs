@@ -23,24 +23,26 @@ jobs:
       matrix:
         os: [ubuntu-latest, ubuntu-24.04-arm]
     runs-on: ${{ matrix.os }}
-    if: ${{ github.event_name == 'pull_request' || inputs.architecture == 'both' || (inputs.architecture == 'amd64' && matrix.os == 'ubuntu-latest') || (inputs.architecture == 'arm64' && matrix.os == 'ubuntu-24.04-arm') }}
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/arch-detect
         id: arch
       - uses: ./.github/actions/oocana-runtime
+        if: ${{ inputs.architecture == 'both' || inputs.architecture == steps.arch.outputs.arch }}
         with:
           architecture: ${{ steps.arch.outputs.arch }}
 
   test-build-context:
     strategy:
       matrix:
-        arch: [amd64, arm64]
-    runs-on: ${{ matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
-    if: ${{ github.event_name == 'pull_request' || inputs.architecture == 'both' || inputs.architecture == matrix.arch }}
+        os: [ubuntu-latest, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+      - uses: ./.github/actions/arch-detect
+        id: arch
       - uses: ./.github/actions/build-context
         with:
+          if: ${{ inputs.architecture == 'both' || inputs.architecture == steps.arch.outputs.arch }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          architecture: ${{ matrix.arch }}
+          architecture: ${{ steps.arch.outputs.arch }}
