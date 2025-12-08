@@ -69,7 +69,7 @@ jobs:
     needs: [arguments-check]
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/arch-detect
+      - uses: oomol/ovmlayer-rootfs/.github/actions/arch-detect@main
         id: arch
       - uses: oomol/ovmlayer-rootfs/.github/actions/oocana-runtime@main
         with:
