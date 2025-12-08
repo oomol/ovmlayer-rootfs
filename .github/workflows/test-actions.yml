@@ -42,7 +42,7 @@ jobs:
       - uses: ./.github/actions/arch-detect
         id: arch
       - uses: ./.github/actions/build-context
+        if: ${{ inputs.architecture == 'both' || inputs.architecture == steps.arch.outputs.arch }}
         with:
-          if: ${{ inputs.architecture == 'both' || inputs.architecture == steps.arch.outputs.arch }}
           token: ${{ secrets.GITHUB_TOKEN }}
           architecture: ${{ steps.arch.outputs.arch }}
