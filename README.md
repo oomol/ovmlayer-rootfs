@@ -42,9 +42,9 @@ Complete Oocana runtime container image with CLI and ovmlayer.
 
 ### Run Oocana with Runtime Image
 ```shell
-docker run -d ghcr.io/oomol/oocana-runtime:latest
-mosquitto -d -p 47688
-oocana run <flow-yaml>
+docker run -d --name oocana ghcr.io/oomol/oocana-runtime:latest
+docker exec -it oocana mosquitto -d -p 47688
+docker exec -it oocana oocana run <flow-yaml>
 ```
 
 ### Build Custom Layer
