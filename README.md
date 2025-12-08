@@ -34,7 +34,7 @@ Complete Oocana runtime container image with CLI and ovmlayer.
 | `rootfs-base.yml` | Build minimal base rootfs | `base-rootfs*` tags |
 | `rootfs-server.yml` | Build server foundation rootfs | `server-base*` tags |
 | `layer-executor.yml` | Build Python/Node.js executor layer | `executor-layer*` tags |
-| `image-runtime.yml` | Build complete runtime image | Push to main or workflow_dispatch |
+| `image-runtime.yml` | Build runtime image with CLI and ovmlayer | Push to main or workflow_dispatch |
 | `layer-package.yml` | Package custom layers (reusable workflow) | Called by other repos |
 | `test-actions.yml` | Test all GitHub Actions | PR or workflow_dispatch |
 
