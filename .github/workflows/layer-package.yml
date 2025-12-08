@@ -122,11 +122,6 @@ jobs:
       id-token: write
     needs: [export-layer]
     steps:
-      - name: download layer
-        uses: actions/download-artifact@v5
-        with:
-          path: ${{ runner.temp }}/export
-          merge-multiple: true
       - name: Install OIDC Client from Core Package
         run: npm install @actions/core@1.11.1 @actions/http-client
         shell: bash
