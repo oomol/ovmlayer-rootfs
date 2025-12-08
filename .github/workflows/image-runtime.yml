@@ -1,6 +1,6 @@
-name: build studio image
-# Builds complete OOMOL studio runtime image with oocana CLI, ovmlayer, and all executors.
-# Creates production-ready multi-architecture container for direct oocana workflow execution.
+name: Runtime Image
+# Builds Oocana runtime container image with oocana CLI and ovmlayer.
+# Does NOT include executor layers - those are separate tar artifacts.
 on:
   pull_request:
     paths:
@@ -8,7 +8,7 @@ on:
       - "package.json"
       - "package-lock.json"
       - "scripts/bin.sh"
-      - ".github/workflows/build-studio-image.yml"
+      - ".github/workflows/image-runtime.yml"
   push:
     branches:
       - main
@@ -17,7 +17,7 @@ on:
       - "package.json"
       - "package-lock.json"
       - "scripts/bin.sh"
-      - ".github/workflows/build-studio-image.yml"
+      - ".github/workflows/image-runtime.yml"
   workflow_dispatch:
 
 jobs:
@@ -46,7 +46,7 @@ jobs:
           flavor: |
             latest=auto
           labels: |
-            org.opencontainers.image.description=A container for running Oocana directly in command line. Python and Node.js block's executor are pre-installed.
+            org.opencontainers.image.description=A container for running Oocana directly in command line.
       - name: Prepare build context (arm64)
         uses: ./.github/actions/build-context
         with:

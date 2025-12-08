@@ -1,11 +1,11 @@
-name: build base rootfs
+name: Base Rootfs
 # Builds minimal Ubuntu-based rootfs with Zsh shell for ovmlayer layer testing.
 # Creates multi-architecture (amd64/arm64) tar archives for basic Linux container foundation.
 
 on:
   pull_request:
     paths:
-      - ".github/workflows/build-base-rootfs.yml"
+      - ".github/workflows/rootfs-base.yml"
       - "dockerfiles/base.dockerfile"
   push:
     tags:

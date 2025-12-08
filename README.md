@@ -1,25 +1,51 @@
 # ovmlayer-rootfs
 
-this repo give three artifacts:
+This repository builds multi-architecture (amd64/arm64) rootfs tarballs and container images for Oocana runtime environments.
 
-1. base-rootfs
-1. layer-rootfs
-1. studio-image
+## Artifacts
 
-## base-rootfs
+### 1. Base Rootfs (`rootfs-base.yml`)
+Minimal Ubuntu-based rootfs with Zsh shell for ovmlayer layer testing.
+- **Purpose**: Basic Linux container foundation for [oocana-rust](https://github.com/oomol/oocana-rust) layer feature tests
+- **Contents**: Minimal Linux userspace + Zsh
+- **Trigger**: Tags matching `base-rootfs*`
 
-base rootfs is a minimal rootfs that is used to run oocana-rust layer feature which only contains basic linux rootfs and zsh shell. It is used to run [oocana-rust](https://gihub.com/oomol/oocana-rust) layer mod test case.
+### 2. Server Rootfs (`rootfs-server.yml`)
+Server base rootfs built from upstream `ghcr.io/oomol/server-base` foundation image.
+- **Purpose**: Foundation layer for studio runtime builds
+- **Trigger**: Tags matching `server-base*`
 
-## layer-rootfs
+### 3. Executor Layer (`layer-executor.yml`)
+Python and Node.js executor dependencies layer for workflow execution.
+- **Purpose**: Run Python and Node.js blocks in oocana-rust layer feature
+- **Contents**: Python executor + Node.js executor (without oocana CLI)
+- **Trigger**: Tags matching `executor-layer*`
 
-this is a rootfs that has add additional python-executor and nodejs-executor to run python and nodejs block, but without oocana cli.
-this rootfs is used to run python and nodejs block for oocana-rust layer feature.
+### 4. Runtime Image (`image-runtime.yml`)
+Complete Oocana runtime container image with CLI and ovmlayer.
+- **Purpose**: Run oocana directly without layer feature
+- **Contents**: oocana CLI + ovmlayer (executor layers are separate tar artifacts)
+- **Registry**: `ghcr.io/oomol/oocana-runtime`
 
-## studio-image
+## Workflows
 
-this is a image that contains oocana, ovmlayer, python-executor and nodejs-executor.  With this image, you can run oocana directly(without layer feature). This image should be used to run oocana directly.
+| Workflow | Purpose | Trigger |
+|----------|---------|---------|
+| `rootfs-base.yml` | Build minimal base rootfs | `base-rootfs*` tags |
+| `rootfs-server.yml` | Build server foundation rootfs | `server-base*` tags |
+| `layer-executor.yml` | Build Python/Node.js executor layer | `executor-layer*` tags |
+| `image-runtime.yml` | Build runtime image with CLI and ovmlayer | Push to main or workflow_dispatch |
+| `layer-package.yml` | Package custom layers (reusable workflow) | Called by other repos |
+| `test-actions.yml` | Test all GitHub Actions | PR or workflow_dispatch |
 
+## Usage
+
+### Run Oocana with Runtime Image
 ```shell
-mosquitto -d -p 47688
-oocana run <flow-yaml>
+docker run -d --name oocana ghcr.io/oomol/oocana-runtime:latest
+docker exec -it oocana mosquitto -d -p 47688
+docker exec -it oocana oocana run <flow-yaml>
 ```
+
+### Build Custom Layer
+Use `layer-package.yml` as a reusable workflow in your repository to create custom package layers.

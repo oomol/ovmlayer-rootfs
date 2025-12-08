@@ -1,10 +1,10 @@
-name: build server base
+name: Server Rootfs
 # Builds base server rootfs from upstream ghcr.io/oomol/server-base foundation image.
 # Creates multi-architecture tar archives for use as foundation layer in studio builds.
 on:
   pull_request:
     paths:
-      - ".github/workflows/build-server-base.yml"
+      - ".github/workflows/rootfs-server.yml"
       - "dockerfiles/server-base.dockerfile"
   push:
     tags:

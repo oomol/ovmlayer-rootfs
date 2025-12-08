@@ -1,9 +1,9 @@
-name: build executor layer
-# build executor layer
+name: Executor Layer
+# Builds executor layer with Python and Node.js dependencies for workflow execution.
 on:
   pull_request:
     paths:
-      - ".github/workflows/build-executor-layer.yml"
+      - ".github/workflows/layer-executor.yml"
       - "package.json"
       - "requirements.txt"
   push:
@@ -16,15 +16,13 @@ jobs:
         os: [ubuntu-latest, ubuntu-24.04-arm]
     runs-on: ${{ matrix.os }}
     steps:
-      - name: architecture
-        run: |
-          echo "architecture=${{ (runner.arch == 'ARM64' || runner.arch == 'ARM') && 'arm64' || 'amd64' }}" >> $GITHUB_OUTPUT
-        id: arch
       - uses: actions/checkout@v4
+      - uses: ./.github/actions/arch-detect
+        id: arch
       - uses: oomol/ovmlayer-rootfs/.github/actions/oocana-runtime@main
         with:
           token: ${{ github.token }}
-          architecture: ${{ steps.arch.outputs.architecture }}
+          architecture: ${{ steps.arch.outputs.arch }}
       - name: create layer
         run: |
           layer=executor
@@ -36,12 +34,12 @@ jobs:
             --mount type=bind,source=${{ github.workspace }}/package.json,dst=/root/layer-deps/package.json,nonrecursive \
             --merged-point m1 \
             "zsh"  "-i" "-c" "/root/layer-deps/install-executor.sh"
-          sudo ovmlayer export --layer=$layer --dest=${{runner.temp}}/${{steps.arch.outputs.architecture}}-executor.tar
+          sudo ovmlayer export --layer=$layer --dest=${{runner.temp}}/${{steps.arch.outputs.arch}}-executor.tar
       - name: upload layer
         uses: actions/upload-artifact@v4
         with:
-          name: ${{steps.arch.outputs.architecture}}-executor-layer
-          path: ${{runner.temp}}/${{steps.arch.outputs.architecture}}-executor.tar
+          name: ${{steps.arch.outputs.arch}}-executor-layer
+          path: ${{runner.temp}}/${{steps.arch.outputs.arch}}-executor.tar
           retention-days: 1
       - name: layer-info
         run: |
@@ -55,7 +53,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: ${{ github.event_name == 'push' &&  github.ref_type == 'tag' }}
         with:
-          files: ${{runner.temp}}/${{steps.arch.outputs.architecture}}-executor.tar
+          files: ${{runner.temp}}/${{steps.arch.outputs.arch}}-executor.tar
           token: ${{ secrets.GITHUB_TOKEN }}
           body_path: release.log
           draft: false

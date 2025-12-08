@@ -1,0 +1,13 @@
+name: Detect Architecture
+description: Detect runner architecture and output normalized arch string (amd64/arm64)
+outputs:
+  arch:
+    description: Normalized architecture string (amd64 or arm64)
+    value: ${{ steps.detect.outputs.arch }}
+runs:
+  using: composite
+  steps:
+    - id: detect
+      shell: bash
+      run: |
+        echo "arch=${{ (runner.arch == 'ARM64' || runner.arch == 'ARM') && 'arm64' || 'amd64' }}" >> $GITHUB_OUTPUT
