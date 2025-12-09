@@ -11,6 +11,8 @@ on:
       - "scripts/entrypoint.sh"
       - ".github/workflows/image-runtime.yml"
   push:
+    tags:
+      - 'oocana-runtime**'
     branches:
       - main
     paths:
@@ -63,7 +65,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          push: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
+          push: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || startsWith(github.ref, 'refs/tags/oocana-runtime') }}
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
