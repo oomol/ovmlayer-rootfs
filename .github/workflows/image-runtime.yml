@@ -4,7 +4,7 @@ name: Runtime Image
 on:
   pull_request:
     paths:
-      - "dockerfiles/studio.dockerfile"
+      - "dockerfiles/runtime.dockerfile"
       - "package.json"
       - "package-lock.json"
       - "scripts/bin.sh"
@@ -13,7 +13,7 @@ on:
     branches:
       - main
     paths:
-      - "dockerfiles/studio.dockerfile"
+      - "dockerfiles/runtime.dockerfile"
       - "package.json"
       - "package-lock.json"
       - "scripts/bin.sh"
@@ -21,7 +21,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-studio:
+  build-runtime:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -69,6 +69,6 @@ jobs:
           #   token=${{ secrets.GITHUB_TOKEN }}
           # secret-files: |
           #   npmrc=.npmrc
-          file: dockerfiles/studio.dockerfile
+          file: dockerfiles/runtime.dockerfile
           cache-from: type=gha
           cache-to: type=gha,mode=max
