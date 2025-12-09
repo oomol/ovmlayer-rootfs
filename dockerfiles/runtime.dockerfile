@@ -23,9 +23,18 @@ RUN pip install -r /app/requirements.txt
 # need download oocana
 RUN mkdir -p /opt/ovmlayer
 COPY ./scripts/entrypoint.sh /root/entrypoint.sh
-COPY ./amd64 ./amd64
-COPY ./arm64 ./arm64
-COPY ./scripts/bin.sh /root/bin.sh
-RUN TARGETPLATFORM=$TARGETPLATFORM BUILDPLATFORM=$BUILDPLATFORM /root/bin.sh
-RUN rm -rf ./amd64 ./arm64
+# Mount architecture-specific files, copy only what's needed based on TARGETPLATFORM
+RUN --mount=type=bind,source=./amd64,target=/tmp/amd64 \
+    --mount=type=bind,source=./arm64,target=/tmp/arm64 \
+    if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
+      cp -r /tmp/amd64/oocana /usr/bin/ && \
+      cp -r /tmp/amd64/ovmlayer/* /usr/bin/ && \
+      cp /tmp/amd64/rootfs.tar /root/rootfs.tar; \
+    elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
+      cp -r /tmp/arm64/oocana /usr/bin/ && \
+      cp -r /tmp/arm64/ovmlayer/* /usr/bin/ && \
+      cp /tmp/arm64/rootfs.tar /root/rootfs.tar; \
+    else \
+      echo "Unsupported platform: $TARGETPLATFORM" && exit 23; \
+    fi
 ENTRYPOINT [ "bash", "-x", "/root/entrypoint.sh" ]
