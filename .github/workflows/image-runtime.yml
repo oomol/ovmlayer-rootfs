@@ -46,7 +46,7 @@ jobs:
           tags: |
             type=sha
             type=raw,value=latest,enable={{is_default_branch}}
-            type=semver,pattern={{version}}
+            type=semver,pattern={{version}},match=@oocana-runtime@(\d+\.\d+\.\d+)
           flavor: |
             latest=auto
           labels: |
