@@ -8,6 +8,7 @@ on:
       - "package.json"
       - "package-lock.json"
       - "scripts/bin.sh"
+      - "scripts/entrypoint.sh"
       - ".github/workflows/image-runtime.yml"
   push:
     branches:
@@ -17,6 +18,7 @@ on:
       - "package.json"
       - "package-lock.json"
       - "scripts/bin.sh"
+      - "scripts/entrypoint.sh"
       - ".github/workflows/image-runtime.yml"
   workflow_dispatch:
 

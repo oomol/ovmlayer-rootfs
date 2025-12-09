@@ -22,7 +22,7 @@ RUN npm install --omit=dev
 RUN pip install -r /app/requirements.txt
 # need download oocana
 RUN mkdir -p /opt/ovmlayer
-COPY ./entrypoint.sh /root/entrypoint.sh
+COPY ./scripts/entrypoint.sh /root/entrypoint.sh
 COPY ./amd64 ./amd64
 COPY ./arm64 ./arm64
 COPY ./scripts/bin.sh /root/bin.sh
