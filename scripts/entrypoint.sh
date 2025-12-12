@@ -10,9 +10,6 @@ else
     mount -o remount,rw /sys/fs/cgroup
 fi
 
-# 某些情况下（特别是 cgroup v2），可能还需要挂载 cgroup2
-mount -t cgroup2 none /sys/fs/cgroup
-
 if [ ! -d "/opt/ovmlayer" ]; then
   echo "[Init] /opt/ovmlayer directory not found, initializing with dev mode."
   ovmlayer setup dev --base-rootfs=/root/rootfs.tar --layer-disk=/root/tmp_overlay_disk
