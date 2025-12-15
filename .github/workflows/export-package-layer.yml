@@ -40,14 +40,9 @@ on:
         type: string
 
 jobs:
-  forward-to-new-workflow:
-    uses: ./.github/workflows/layer-package.yml
-    secrets:
-      token: ${{ secrets.token }}
-    with:
-      oocana: ${{ inputs.oocana }}
-      ovmlayer: ${{ inputs.ovmlayer }}
-      rootfs: ${{ inputs.rootfs }}
-      package-name: ${{ inputs.package-name }}
-      version: ${{ inputs.version }}
-      registry: ${{ inputs.registry }}
+  deprecated-warning:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print deprecation warning
+        run: |
+          echo "::warning::This workflow is deprecated. The server now builds automatically, and you no longer need to call this workflow manually."
