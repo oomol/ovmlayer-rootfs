@@ -21,6 +21,10 @@ inputs:
     description: "rootfs tar"
     required: false
     default: "server-base@0.5.0"
+  platform:
+    description: "Platform for downloading releases. Defaults to studio, can be studio or cloud"
+    required: false
+    default: "studio"
 
 runs:
   using: "composite"
@@ -44,9 +48,20 @@ runs:
       shell: bash
 
     - name: Setup rootfs overlay
+      if: ${{ inputs.platform == 'studio' }}
       run: |
         sudo ovmlayer setup dev \
           --base-rootfs=${{ runner.temp }}/binaries/rootfs.tar \
           --layer-disk=/root/tmp_over_desk
         echo "Rootfs overlay configured"
+      shell: bash
+    - name: Setup rootfs overlay for cloud
+      if: ${{ inputs.platform == 'cloud' }}
+      run: |
+        mkdir -p ${{ runner.temp }}/opt/ovmlayer
+        sudo ovmlayer setup \
+          -d ${{ runner.temp }}/opt/ovmlayer \
+          --rootfs-tar=${{ runner.temp }}/binaries/rootfs.tar \
+          --rootfs-path=${{ runner.temp }}/cloud_rootfs_overlay
+        echo "Rootfs overlay for cloud configured"
       shell: bash

@@ -1,0 +1,63 @@
+name: Executor Layer
+# Builds executor layer with Python and Node.js dependencies for workflow execution.
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/layer-cloud-executor.yml"
+      - "package.json"
+      - "requirements.txt"
+  push:
+    tags:
+      - "cloud-executor-layer*"
+jobs:
+  build-layer:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/arch-detect
+        id: arch
+      - uses: ./.github/actions/oocana-runtime
+        with:
+          token: ${{ github.token }}
+          architecture: ${{ steps.arch.outputs.arch }}
+          ovmlayer: cloud-ovmlayer@0.6.1
+          platform: "cloud"
+      - name: create layer
+        run: |
+          layer=executor
+          sudo ovmlayer create $layer
+          sudo ovmlayer merge -l $layer -m m1
+          sudo ovmlayer run --workdir=/root \
+            --mount type=bind,source=${{ github.workspace }}/scripts/install-executor.sh,dst=/root/layer-deps/install-executor.sh,nonrecursive \
+            --mount type=bind,source=${{ github.workspace }}/requirements.txt,dst=/root/layer-deps/requirements.txt,nonrecursive \
+            --mount type=bind,source=${{ github.workspace }}/package.json,dst=/root/layer-deps/package.json,nonrecursive \
+            --merged-point m1 \
+            "zsh"  "-i" "-c" "/root/layer-deps/install-executor.sh"
+          sudo ovmlayer export --layer=$layer --dest=${{runner.temp}}/${{steps.arch.outputs.arch}}-executor.tar
+      - name: upload layer
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{steps.arch.outputs.arch}}-executor-layer
+          path: ${{runner.temp}}/${{steps.arch.outputs.arch}}-executor.tar
+          retention-days: 1
+      - name: layer-info
+        run: |
+          echo "Python Dependencies:" > release.log
+          cat requirements.txt >> release.log
+          echo "" >> release.log
+          echo "" >> release.log
+          echo "Node.js Dependencies:" >> release.log
+          npm pkg get dependencies | grep -v "@oomol/oocana\"" >> release.log
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: ${{ github.event_name == 'push' &&  github.ref_type == 'tag' }}
+        with:
+          files: ${{runner.temp}}/${{steps.arch.outputs.arch}}-executor.tar
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body_path: release.log
+          draft: false
+          prerelease: false
+          make_latest: true
