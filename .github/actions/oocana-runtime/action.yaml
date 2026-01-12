@@ -59,8 +59,9 @@ runs:
       if: ${{ inputs.platform == 'cloud' }}
       run: |
         mkdir -p ${{ runner.temp }}/opt/ovmlayer
+        chmod +x /usr/bin/ovmlayer
         sudo ovmlayer setup \
-          -d ${{ runner.temp }}/opt/ovmlayer \
+          -d ${{ runner.temp }}/opt/ovmlayer,rw \
           --rootfs-tar=${{ runner.temp }}/binaries/rootfs.tar \
           --rootfs-path=${{ runner.temp }}/cloud_rootfs_overlay
         echo "Rootfs overlay for cloud configured"
