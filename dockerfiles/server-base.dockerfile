@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
 # https://github.com/docker/docs/issues/20935
-FROM ghcr.io/oomol/server-base:v0.5.0 AS builder
+FROM ghcr.io/oomol/server-base:v0.5.1 AS builder
 
 WORKDIR /app
