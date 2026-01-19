@@ -59,11 +59,15 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           architecture: arm64
+          ovmlayer_app_id: ${{ vars.OOMOL_DOWNLOADER_APP_ID }}
+          ovmlayer_app_private_key: ${{ secrets.OOMOL_DOWNLOADER_APP_PRIVATE_KEY }}
       - name: Prepare build context (amd64)
         uses: ./.github/actions/build-context
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           architecture: amd64
+          ovmlayer_app_id: ${{ vars.OOMOL_DOWNLOADER_APP_ID }}
+          ovmlayer_app_private_key: ${{ secrets.OOMOL_DOWNLOADER_APP_PRIVATE_KEY }}
       - name: Build and push
         uses: docker/build-push-action@v6
         with:

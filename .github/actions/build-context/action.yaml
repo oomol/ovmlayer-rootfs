@@ -16,17 +16,27 @@ inputs:
   ovmlayer:
     description: "ovmlayer version"
     required: false
-    default: ovmlayer@0.5.1
+    default: v0.5.1
   rootfs:
     description: "rootfs tar"
     required: false
     default: "server-base@0.5.0"
+  platform:
+    description: "Platform: studio or cloud"
+    required: false
+    default: "studio"
+  ovmlayer_app_id:
+    description: "GitHub App ID for downloading ovmlayer from private repo"
+    required: true
+  ovmlayer_app_private_key:
+    description: "GitHub App Private Key for downloading ovmlayer"
+    required: true
 
 runs:
   using: "composite"
   steps:
     - name: Fetch binaries to workspace
-      uses: oomol/ovmlayer-rootfs/.github/actions/fetch@main
+      uses: ./.github/actions/fetch
       with:
         token: ${{ inputs.token }}
         architecture: ${{ inputs.architecture }}
@@ -34,3 +44,6 @@ runs:
         oocana: ${{ inputs.oocana }}
         ovmlayer: ${{ inputs.ovmlayer }}
         rootfs: ${{ inputs.rootfs }}
+        platform: ${{ inputs.platform }}
+        ovmlayer_app_id: ${{ inputs.ovmlayer_app_id }}
+        ovmlayer_app_private_key: ${{ inputs.ovmlayer_app_private_key }}

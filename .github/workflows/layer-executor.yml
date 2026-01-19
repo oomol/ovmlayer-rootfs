@@ -19,10 +19,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/arch-detect
         id: arch
-      - uses: oomol/ovmlayer-rootfs/.github/actions/oocana-runtime@main
+      - uses: ./.github/actions/oocana-runtime
         with:
           token: ${{ github.token }}
           architecture: ${{ steps.arch.outputs.arch }}
+          ovmlayer_app_id: ${{ vars.OOMOL_DOWNLOADER_APP_ID }}
+          ovmlayer_app_private_key: ${{ secrets.OOMOL_DOWNLOADER_APP_PRIVATE_KEY }}
       - name: create layer
         run: |
           layer=executor
