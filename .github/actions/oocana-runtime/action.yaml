@@ -36,7 +36,7 @@ runs:
   using: "composite"
   steps:
     - name: Fetch binaries to temp directory
-      uses: oomol/ovmlayer-rootfs/.github/actions/fetch@main
+      uses: ./.github/actions/fetch
       with:
         token: ${{ inputs.token }}
         architecture: ${{ inputs.architecture }}
