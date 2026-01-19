@@ -23,6 +23,16 @@ inputs:
     description: "rootfs tar"
     required: false
     default: "server-base@0.5.0"
+  platform:
+    description: "Platform: studio or cloud"
+    required: false
+    default: "studio"
+  ovmlayer_app_id:
+    description: "GitHub App ID for downloading ovmlayer from private repo"
+    required: true
+  ovmlayer_app_private_key:
+    description: "GitHub App Private Key for downloading ovmlayer"
+    required: true
 
 runs:
   using: "composite"
@@ -34,6 +44,15 @@ runs:
           exit 1
         fi
       shell: bash
+
+    - name: Generate GitHub App token for ovmlayer
+      id: ovmlayer-token
+      uses: actions/create-github-app-token@v2
+      with:
+        app-id: ${{ inputs.ovmlayer_app_id }}
+        private-key: ${{ inputs.ovmlayer_app_private_key }}
+        owner: oomol
+        repositories: ovmlayer,ovmlayer-next
 
     - name: Resolve oocana version
       id: oocana-version
@@ -52,10 +71,16 @@ runs:
       run: |
         if [ "${{ inputs.architecture }}" = "amd64" ]; then
           echo "oocana_binary=oocana-cli-x86_64-unknown-linux-gnu" >> $GITHUB_OUTPUT
-          echo "ovmlayer_pattern=ovmlayer_amd64.tar.zst" >> $GITHUB_OUTPUT
+          echo "ovmlayer_pattern=*amd64*" >> $GITHUB_OUTPUT
         else
           echo "oocana_binary=oocana-cli-aarch64-unknown-linux-gnu" >> $GITHUB_OUTPUT
-          echo "ovmlayer_pattern=ovmlayer_arm64.tar.zst" >> $GITHUB_OUTPUT
+          echo "ovmlayer_pattern=*arm64*" >> $GITHUB_OUTPUT
+        fi
+
+        if [ "${{ inputs.platform }}" = "cloud" ]; then
+          echo "ovmlayer_repo=oomol/ovmlayer-next" >> $GITHUB_OUTPUT
+        else
+          echo "ovmlayer_repo=oomol/ovmlayer" >> $GITHUB_OUTPUT
         fi
       shell: bash
 
@@ -80,13 +105,13 @@ runs:
     - name: Download ovmlayer
       run: |
         gh release download ${{ inputs.ovmlayer }} \
-          --repo oomol/ovmlayer-rootfs \
+          --repo ${{ steps.arch-vars.outputs.ovmlayer_repo }} \
           --pattern "${{ steps.arch-vars.outputs.ovmlayer_pattern }}" \
           --clobber \
           -O ${{ runner.temp }}/ovmlayer.tar.zst
       shell: bash
       env:
-        GH_TOKEN: ${{ inputs.token }}
+        GH_TOKEN: ${{ steps.ovmlayer-token.outputs.token }}
 
     - name: Extract ovmlayer
       run: |

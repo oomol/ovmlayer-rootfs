@@ -21,6 +21,16 @@ inputs:
     description: "rootfs tar"
     required: false
     default: "server-base@0.5.0"
+  platform:
+    description: "Platform: studio or cloud"
+    required: false
+    default: "studio"
+  ovmlayer_app_id:
+    description: "GitHub App ID for downloading ovmlayer from private repo"
+    required: true
+  ovmlayer_app_private_key:
+    description: "GitHub App Private Key for downloading ovmlayer"
+    required: true
 
 runs:
   using: "composite"
@@ -34,3 +44,6 @@ runs:
         oocana: ${{ inputs.oocana }}
         ovmlayer: ${{ inputs.ovmlayer }}
         rootfs: ${{ inputs.rootfs }}
+        platform: ${{ inputs.platform }}
+        ovmlayer_app_id: ${{ inputs.ovmlayer_app_id }}
+        ovmlayer_app_private_key: ${{ inputs.ovmlayer_app_private_key }}
