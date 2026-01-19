@@ -16,10 +16,10 @@ on:
         type: string
         default: "latest"
       ovmlayer:
-        description: "Version of the ovmlayer package to use. Defaults to ovmlayer@0.5.1"
+        description: "Version of the ovmlayer package to use. Defaults to v0.5.1"
         required: false
         type: string
-        default: ovmlayer@0.5.1
+        default: v0.5.1
       rootfs:
         description: "rootfs tar"
         required: false

@@ -16,7 +16,7 @@ inputs:
   ovmlayer:
     description: "ovmlayer version"
     required: false
-    default: ovmlayer@0.5.1
+    default: v0.5.1
   rootfs:
     description: "rootfs tar"
     required: false
