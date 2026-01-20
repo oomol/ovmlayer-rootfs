@@ -1,4 +1,4 @@
-name: Executor Layer
+name: Cloud Executor Layer
 # Builds executor layer with Python and Node.js dependencies for workflow execution.
 on:
   pull_request:
