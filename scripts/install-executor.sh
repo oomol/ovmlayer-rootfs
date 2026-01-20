@@ -16,5 +16,5 @@ done
 
 pip install -r /root/layer-deps/requirements.txt
 
-npm cache clean --force
-pip cache purge
+# npm cache clean --force
+# pip cache purge
