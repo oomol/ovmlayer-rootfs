@@ -36,6 +36,22 @@ jobs:
       - uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+      - name: Prepare build context (arm64)
+        id: build-context-arm64
+        uses: ./.github/actions/build-context
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          architecture: arm64
+          ovmlayer_app_id: ${{ vars.OOMOL_DOWNLOADER_APP_ID }}
+          ovmlayer_app_private_key: ${{ secrets.OOMOL_DOWNLOADER_APP_PRIVATE_KEY }}
+      - name: Prepare build context (amd64)
+        id: build-context-amd64
+        uses: ./.github/actions/build-context
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          architecture: amd64
+          ovmlayer_app_id: ${{ vars.OOMOL_DOWNLOADER_APP_ID }}
+          ovmlayer_app_private_key: ${{ secrets.OOMOL_DOWNLOADER_APP_PRIVATE_KEY }}
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
@@ -49,21 +65,9 @@ jobs:
             latest=auto
           labels: |
             org.opencontainers.image.description=A container for running Oocana directly in command line.
-      - name: Prepare build context (arm64)
-        uses: ./.github/actions/build-context
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          architecture: arm64
-          ovmlayer_app_id: ${{ vars.OOMOL_DOWNLOADER_APP_ID }}
-          ovmlayer_app_private_key: ${{ secrets.OOMOL_DOWNLOADER_APP_PRIVATE_KEY }}
-      - name: Prepare build context (amd64)
-        uses: ./.github/actions/build-context
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          architecture: amd64
-          ovmlayer_app_id: ${{ vars.OOMOL_DOWNLOADER_APP_ID }}
-          ovmlayer_app_private_key: ${{ secrets.OOMOL_DOWNLOADER_APP_PRIVATE_KEY }}
-          oocana: v0.30.33
+            io.oomol.oocana.version=${{ steps.build-context-amd64.outputs.oocana_version }}
+            io.oomol.ovmlayer.version=${{ steps.build-context-amd64.outputs.ovmlayer_version }}
+            io.oomol.rootfs.version=${{ steps.build-context-amd64.outputs.rootfs_version }}
       - name: Build and push
         uses: docker/build-push-action@v6
         with:

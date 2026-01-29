@@ -14,9 +14,9 @@ inputs:
     required: false
     default: "latest"
   ovmlayer:
-    description: "Release tag or version of ovmlayer to download. Defaults to v0.5.1"
+    description: "Release tag or version of ovmlayer to download. Defaults to latest"
     required: false
-    default: v0.5.1
+    default: latest
   rootfs:
     description: "rootfs tar"
     required: false
@@ -32,10 +32,22 @@ inputs:
     description: "GitHub App Private Key for downloading ovmlayer"
     required: true
 
+outputs:
+  oocana_version:
+    description: "Resolved oocana version"
+    value: ${{ steps.fetch.outputs.oocana_version }}
+  ovmlayer_version:
+    description: "Resolved ovmlayer version"
+    value: ${{ steps.fetch.outputs.ovmlayer_version }}
+  rootfs_version:
+    description: "Rootfs version used"
+    value: ${{ steps.fetch.outputs.rootfs_version }}
+
 runs:
   using: "composite"
   steps:
     - name: Fetch binaries to temp directory
+      id: fetch
       uses: ./.github/actions/fetch
       with:
         token: ${{ inputs.token }}

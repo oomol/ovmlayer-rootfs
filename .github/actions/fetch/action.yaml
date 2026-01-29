@@ -14,11 +14,11 @@ inputs:
   oocana:
     description: "oocana tag (supports 'latest' or specific version like v0.30.2)"
     required: false
-    default: v0.30.2
+    default: latest
   ovmlayer:
     description: "ovmlayer version"
     required: false
-    default: v0.5.1
+    default: latest
   rootfs:
     description: "rootfs tar"
     required: false
@@ -33,6 +33,17 @@ inputs:
   ovmlayer_app_private_key:
     description: "GitHub App Private Key for downloading ovmlayer"
     required: true
+
+outputs:
+  oocana_version:
+    description: "Resolved oocana version"
+    value: ${{ steps.oocana-version.outputs.version }}
+  ovmlayer_version:
+    description: "Resolved ovmlayer version"
+    value: ${{ steps.ovmlayer-version.outputs.version }}
+  rootfs_version:
+    description: "Rootfs version used"
+    value: ${{ inputs.rootfs }}
 
 runs:
   using: "composite"
@@ -84,6 +95,19 @@ runs:
         fi
       shell: bash
 
+    - name: Resolve ovmlayer version
+      id: ovmlayer-version
+      run: |
+        if [ "${{ inputs.ovmlayer }}" = "latest" ]; then
+          version=$(gh release list --repo ${{ steps.arch-vars.outputs.ovmlayer_repo }} --limit 1 | awk '{print $1}')
+          echo "version=$version" >> $GITHUB_OUTPUT
+        else
+          echo "version=${{ inputs.ovmlayer }}" >> $GITHUB_OUTPUT
+        fi
+      env:
+        GH_TOKEN: ${{ steps.ovmlayer-token.outputs.token }}
+      shell: bash
+
     - name: Create destination directory
       run: mkdir -p "${{ inputs.destination }}"
       shell: bash
@@ -104,7 +128,7 @@ runs:
 
     - name: Download ovmlayer
       run: |
-        gh release download ${{ inputs.ovmlayer }} \
+        gh release download ${{ steps.ovmlayer-version.outputs.version }} \
           --repo ${{ steps.arch-vars.outputs.ovmlayer_repo }} \
           --pattern "${{ steps.arch-vars.outputs.ovmlayer_pattern }}" \
           --clobber \
@@ -129,6 +153,17 @@ runs:
       shell: bash
       env:
         GH_TOKEN: ${{ inputs.token }}
+
+    - name: Write versions.json
+      run: |
+        cat > ${{ inputs.destination }}/versions.json << EOF
+        {
+          "oocana": "${{ steps.oocana-version.outputs.version }}",
+          "ovmlayer": "${{ steps.ovmlayer-version.outputs.version }}",
+          "rootfs": "${{ inputs.rootfs }}"
+        }
+        EOF
+      shell: bash
 
     - name: Show downloaded files
       run: |
