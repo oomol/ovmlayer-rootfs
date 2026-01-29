@@ -34,6 +34,17 @@ inputs:
     description: "GitHub App Private Key for downloading ovmlayer"
     required: true
 
+outputs:
+  oocana_version:
+    description: "Resolved oocana version"
+    value: ${{ steps.oocana-version.outputs.version }}
+  ovmlayer_version:
+    description: "Resolved ovmlayer version"
+    value: ${{ steps.ovmlayer-version.outputs.version }}
+  rootfs_version:
+    description: "Rootfs version used"
+    value: ${{ inputs.rootfs }}
+
 runs:
   using: "composite"
   steps:
@@ -142,6 +153,17 @@ runs:
       shell: bash
       env:
         GH_TOKEN: ${{ inputs.token }}
+
+    - name: Write versions.json
+      run: |
+        cat > ${{ inputs.destination }}/versions.json << EOF
+        {
+          "oocana": "${{ steps.oocana-version.outputs.version }}",
+          "ovmlayer": "${{ steps.ovmlayer-version.outputs.version }}",
+          "rootfs": "${{ inputs.rootfs }}"
+        }
+        EOF
+      shell: bash
 
     - name: Show downloaded files
       run: |
