@@ -84,6 +84,19 @@ runs:
         fi
       shell: bash
 
+    - name: Resolve ovmlayer version
+      id: ovmlayer-version
+      run: |
+        if [ "${{ inputs.ovmlayer }}" = "latest" ]; then
+          version=$(gh release list --repo ${{ steps.arch-vars.outputs.ovmlayer_repo }} --limit 1 | awk '{print $1}')
+          echo "version=$version" >> $GITHUB_OUTPUT
+        else
+          echo "version=${{ inputs.ovmlayer }}" >> $GITHUB_OUTPUT
+        fi
+      env:
+        GH_TOKEN: ${{ steps.ovmlayer-token.outputs.token }}
+      shell: bash
+
     - name: Create destination directory
       run: mkdir -p "${{ inputs.destination }}"
       shell: bash
@@ -104,7 +117,7 @@ runs:
 
     - name: Download ovmlayer
       run: |
-        gh release download ${{ inputs.ovmlayer }} \
+        gh release download ${{ steps.ovmlayer-version.outputs.version }} \
           --repo ${{ steps.arch-vars.outputs.ovmlayer_repo }} \
           --pattern "${{ steps.arch-vars.outputs.ovmlayer_pattern }}" \
           --clobber \
