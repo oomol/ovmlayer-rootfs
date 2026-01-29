@@ -14,11 +14,11 @@ inputs:
   oocana:
     description: "oocana tag (supports 'latest' or specific version like v0.30.2)"
     required: false
-    default: v0.30.2
+    default: latest
   ovmlayer:
     description: "ovmlayer version"
     required: false
-    default: v0.5.1
+    default: latest
   rootfs:
     description: "rootfs tar"
     required: false
