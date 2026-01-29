@@ -14,7 +14,7 @@ inputs:
     required: false
     default: "latest"
   ovmlayer:
-    description: "Release tag or version of ovmlayer to download. Defaults to v0.5.1"
+    description: "Release tag or version of ovmlayer to download. Defaults to latest"
     required: false
     default: latest
   rootfs:
