@@ -20,6 +20,7 @@ jobs:
       - uses: ./.github/actions/arch-detect
         id: arch
       - uses: ./.github/actions/oocana-runtime
+        id: runtime
         with:
           token: ${{ github.token }}
           architecture: ${{ steps.arch.outputs.arch }}
@@ -45,11 +46,15 @@ jobs:
           retention-days: 1
       - name: layer-info
         run: |
-          echo "Python Dependencies:" > release.log
+          echo "## Runtime Versions" > release.log
+          echo "- oocana: ${{ steps.runtime.outputs.oocana_version }}" >> release.log
+          echo "- ovmlayer: ${{ steps.runtime.outputs.ovmlayer_version }}" >> release.log
+          echo "- rootfs: ${{ steps.runtime.outputs.rootfs_version }}" >> release.log
+          echo "" >> release.log
+          echo "## Python Dependencies" >> release.log
           cat requirements.txt >> release.log
           echo "" >> release.log
-          echo "" >> release.log
-          echo "Node.js Dependencies:" >> release.log
+          echo "## Node.js Dependencies" >> release.log
           npm pkg get dependencies | grep -v "@oomol/oocana\"" >> release.log
       - name: Release
         uses: softprops/action-gh-release@v2
