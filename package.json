@@ -4,6 +4,7 @@
   "dependencies": {
     "@oomol/node-executor": "0.20.45",
     "@oomol/oocana": "0.24.5",
-    "@oomol/oocana-sdk": "0.22.9"
+    "@oomol/oocana-sdk": "0.22.9",
+    "oomol-fusion-sdk": "2.0.0"
   }
 }
