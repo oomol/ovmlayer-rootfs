@@ -1,2 +1,3 @@
 oocana-python-executor==0.16.18
 oocana==0.18.12
+oomol-fusion-sdk==2.0.0
