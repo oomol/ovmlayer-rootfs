@@ -114,10 +114,15 @@ runs:
         set -euo pipefail
 
         if [ "${{ inputs.rootfs }}" = "latest" ]; then
-          version="$(
-            gh release list --repo oomol/ovmlayer-rootfs --exclude-drafts --exclude-pre-releases --limit 100 \
-              | awk '$1 ~ /^server-base@/ { print $1; exit }'
-          )"
+          version=""
+          while read -r tag _; do
+            if [[ "$tag" == server-base@* ]]; then
+              version="$tag"
+              break
+            fi
+          done < <(
+            gh release list --repo oomol/ovmlayer-rootfs --exclude-drafts --exclude-pre-releases --limit 100
+          )
 
           if [ -z "$version" ]; then
             echo "Failed to resolve latest server-base rootfs release" >&2
