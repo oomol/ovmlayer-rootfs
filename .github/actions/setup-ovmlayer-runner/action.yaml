@@ -1,5 +1,5 @@
 name: setup-ovmlayer-runner
-description: "Sets up oocana runtime environment - installs CLI tools to system paths and configures rootfs overlay for runner execution"
+description: "Sets up oocana runtime environment - installs CLI tools to system paths and configures rootfs overlay for runner execution, defaulting rootfs to latest via fetch"
 inputs:
   token:
     description: "GitHub token to use for downloading releases"
@@ -18,9 +18,9 @@ inputs:
     required: false
     default: latest
   rootfs:
-    description: "rootfs tar"
+    description: "Rootfs release tag to download. Defaults to latest"
     required: false
-    default: "server-base@0.5.0"
+    default: latest
   platform:
     description: "Platform for downloading releases. Defaults to studio, can be studio or cloud"
     required: false
@@ -40,7 +40,7 @@ outputs:
     description: "Resolved ovmlayer version"
     value: ${{ steps.fetch.outputs.ovmlayer_version }}
   rootfs_version:
-    description: "Rootfs version used"
+    description: "Resolved rootfs release tag"
     value: ${{ steps.fetch.outputs.rootfs_version }}
 
 runs:

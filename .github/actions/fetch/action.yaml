@@ -1,5 +1,5 @@
 name: fetch
-description: "Fetches oocana CLI, ovmlayer tools, and rootfs - core download logic without installation assumptions"
+description: "Fetches oocana CLI, ovmlayer tools, and rootfs - core download logic without installation assumptions. Supports rootfs=latest, which resolves to the newest server-base@<version> release"
 inputs:
   token:
     description: "GitHub token"
@@ -20,9 +20,9 @@ inputs:
     required: false
     default: latest
   rootfs:
-    description: "rootfs tar"
+    description: "rootfs release tag to download. Supports 'latest'; when set to 'latest', resolves to the newest release whose tag matches server-base@<version>"
     required: false
-    default: "server-base@0.5.0"
+    default: latest
   platform:
     description: "Platform: studio or cloud"
     required: false
@@ -42,8 +42,8 @@ outputs:
     description: "Resolved ovmlayer version"
     value: ${{ steps.ovmlayer-version.outputs.version }}
   rootfs_version:
-    description: "Rootfs version used"
-    value: ${{ inputs.rootfs }}
+    description: "Resolved rootfs release tag"
+    value: ${{ steps.rootfs-version.outputs.version }}
 
 runs:
   using: "composite"
@@ -108,6 +108,35 @@ runs:
         GH_TOKEN: ${{ steps.ovmlayer-token.outputs.token }}
       shell: bash
 
+    - name: Resolve rootfs version
+      id: rootfs-version
+      run: |
+        set -euo pipefail
+
+        if [ "${{ inputs.rootfs }}" = "latest" ]; then
+          version=""
+          while read -r tag _; do
+            if [[ "$tag" == server-base@* ]]; then
+              version="$tag"
+              break
+            fi
+          done < <(
+            gh release list --repo oomol/ovmlayer-rootfs --exclude-drafts --exclude-pre-releases --limit 100
+          )
+
+          if [ -z "$version" ]; then
+            echo "Failed to resolve latest server-base rootfs release" >&2
+            exit 1
+          fi
+
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+        else
+          echo "version=${{ inputs.rootfs }}" >> "$GITHUB_OUTPUT"
+        fi
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+      shell: bash
+
     - name: Create destination directory
       run: mkdir -p "${{ inputs.destination }}"
       shell: bash
@@ -146,7 +175,7 @@ runs:
 
     - name: Download rootfs
       run: |
-        gh release download ${{ inputs.rootfs }} \
+        gh release download ${{ steps.rootfs-version.outputs.version }} \
           --repo oomol/ovmlayer-rootfs \
           --pattern "${{ inputs.architecture }}*" \
           -O ${{ inputs.destination }}/rootfs.tar
@@ -160,7 +189,7 @@ runs:
         {
           "oocana": "${{ steps.oocana-version.outputs.version }}",
           "ovmlayer": "${{ steps.ovmlayer-version.outputs.version }}",
-          "rootfs": "${{ inputs.rootfs }}"
+          "rootfs": "${{ steps.rootfs-version.outputs.version }}"
         }
         EOF
       shell: bash
