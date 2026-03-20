@@ -1,0 +1,211 @@
+name: Tag Executor Layers
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "package.json"
+      - "requirements.txt"
+      - ".github/workflows/tag-executor-layer.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: tag-executor-layers
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  tag-executor-layers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Decide whether to push tags
+        id: mode
+        shell: bash
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          CURRENT_SHA: ${{ github.sha }}
+          EVENT_NAME: ${{ github.event_name }}
+          HEAD_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          set -euo pipefail
+
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            echo "should_push=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          case "$HEAD_COMMIT_MESSAGE" in
+            "chore(release): bump executor layer version to "*) 
+              echo "Auto-generated version bump commit detected; skipping"
+              echo "should_push=false" >> "$GITHUB_OUTPUT"
+              exit 0
+              ;;
+          esac
+
+          if [[ "$BEFORE_SHA" =~ ^0+$ ]]; then
+            echo "No previous commit available; skipping tag push"
+            echo "should_push=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if ! git cat-file -e "$BEFORE_SHA^{commit}" 2>/dev/null; then
+            git fetch --no-tags --depth=1 origin "$BEFORE_SHA"
+          fi
+
+          changed_files="$(git diff --name-only "$BEFORE_SHA" "$CURRENT_SHA")"
+          printf 'Changed files:\n%s\n' "$changed_files"
+
+          workflow_changed=false
+          package_changed=false
+          requirements_changed=false
+
+          if printf '%s\n' "$changed_files" | grep -Fx ".github/workflows/tag-executor-layer.yml" >/dev/null; then
+            workflow_changed=true
+          fi
+
+          if printf '%s\n' "$changed_files" | grep -Fx "package.json" >/dev/null; then
+            package_changed=true
+          fi
+
+          if printf '%s\n' "$changed_files" | grep -Fx "requirements.txt" >/dev/null; then
+            requirements_changed=true
+          fi
+
+          if [[ "$workflow_changed" == "true" && "$package_changed" != "true" && "$requirements_changed" != "true" ]]; then
+            echo "Only the workflow file changed; version extraction will run without pushing tags"
+            echo "should_push=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "should_push=true" >> "$GITHUB_OUTPUT"
+
+      - name: Extract executor layer version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git fetch --tags --force
+
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          import re
+          import subprocess
+
+          tag_pattern = re.compile(r'^(?:executor-layer|cloud-executor-layer)@(\d+\.\d+\.\d+)$')
+          tags = subprocess.run(
+              ["git", "tag", "--list", "executor-layer@*", "cloud-executor-layer@*"],
+              check=True,
+              capture_output=True,
+              text=True,
+          ).stdout.splitlines()
+
+          versions = []
+          for tag in tags:
+              match = tag_pattern.match(tag)
+              if match:
+                  parts = tuple(int(part) for part in match.group(1).split("."))
+                  versions.append(parts)
+
+          if versions:
+              current = max(versions)
+              next_version_parts = list(current)
+              next_version_parts[-1] += 1
+              previous_version = ".".join(str(part) for part in current)
+              next_version = ".".join(str(part) for part in next_version_parts)
+          else:
+              previous_version = ""
+              next_version = "0.1.0"
+
+          with open("package.json", encoding="utf-8") as file:
+              package_version = json.load(file).get("version", "")
+
+          print(f"previous_version={previous_version}")
+          print(f"package_version={package_version}")
+          print(f"version={next_version}")
+          PY
+
+      - name: Patch package.json version
+        if: ${{ steps.mode.outputs.should_push == 'true' }}
+        id: patch
+        shell: bash
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          python3 - <<'PY'
+          import json
+          import os
+
+          path = "package.json"
+          version = os.environ["VERSION"]
+
+          with open(path, encoding="utf-8") as file:
+              data = json.load(file)
+
+          data["version"] = version
+
+          with open(path, "w", encoding="utf-8") as file:
+              json.dump(data, file, indent=2)
+              file.write("\n")
+          PY
+
+          if git diff --quiet -- package.json; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit version bump
+        if: ${{ steps.mode.outputs.should_push == 'true' && steps.patch.outputs.changed == 'true' }}
+        shell: bash
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add package.json
+          git commit -m "chore(release): bump executor layer version to $VERSION"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+
+      - name: Create and push git tags
+        if: ${{ steps.mode.outputs.should_push == 'true' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          version="${{ steps.version.outputs.version }}"
+          commit_sha="$(git rev-parse HEAD)"
+          tags=(
+            "executor-layer@$version"
+            "cloud-executor-layer@$version"
+          )
+
+          git fetch --tags --force
+
+          for tag in "${tags[@]}"; do
+            if git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
+              existing_commit="$(git rev-list -n 1 "$tag")"
+              if [[ "$existing_commit" == "$commit_sha" ]]; then
+                echo "Tag $tag already points to $commit_sha"
+                continue
+              fi
+
+              echo "Tag $tag already exists on $existing_commit, refusing to move it" >&2
+              exit 1
+            fi
+
+            git tag "$tag" "$commit_sha"
+            git push origin "refs/tags/$tag"
+          done

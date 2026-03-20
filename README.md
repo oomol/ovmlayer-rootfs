@@ -94,5 +94,6 @@ Container image for the mount-style runtime dependency environment.
 
 | Workflow | Trigger | Purpose |
 | --- | --- | --- |
+| `tag-executor-layer.yml` | push to `main` on `package.json`, `requirements.txt`, or manual dispatch | Resolves the highest existing `executor-layer` or `cloud-executor-layer` version, bumps the patch version, updates `package.json`, then creates both tags. |
 | `test-actions.yml` | pull request on action files, `workflow_dispatch` | Verifies reusable actions in this repository. |
 | `export-package-layer.yml` | `workflow_call` | Deprecated compatibility workflow that only prints a warning. |
