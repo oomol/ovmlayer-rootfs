@@ -17,7 +17,11 @@ RUN echo "export PATH=/app:/app/node_modules/.bin:$PATH" >> ~/.bashrc && echo "e
 COPY ./package.json /app/package.json
 COPY ./package-lock.json /app/package-lock.json
 COPY ./requirements.txt /app/requirements.txt
-RUN npm install --omit=dev
+# GitHub Actions multi-arch builds can hit ETXTBSY when esbuild's postinstall
+# immediately execs the freshly unpacked binary under buildx/overlayfs.
+# npm still installs the platform-specific esbuild optional dependency here, so
+# skipping lifecycle scripts only drops the postinstall self-check/shim rewrite.
+RUN npm ci --omit=dev --ignore-scripts
 # use uv install
 RUN pip install -r /app/requirements.txt
 # need download oocana
