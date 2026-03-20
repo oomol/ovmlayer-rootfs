@@ -56,7 +56,7 @@ Container image with `oocana` and `ovmlayer` for directly running the runtime en
 - Startup behavior:
   - runs [`scripts/entrypoint.sh`](/Users/yleaf/oomol/ovmlayer-rootfs/scripts/entrypoint.sh), which initializes ovmlayer from `/root/rootfs.tar` if needed
 - Tag trigger: `oocana-runtime*`
-- Workflow: `image-runtime.yml`
+- Workflow: `image-oocana-runtime.yml`
 
 ### Oocana Mount Image
 
@@ -69,7 +69,7 @@ Container image for running Oocana with mounted rootfs support.
 - Intended use:
   - provide the dependency environment for scenarios where rootfs and related layer assets are mounted from outside the container
 - Tag trigger: `oocana-mount*`
-- Workflow: `image-oocana.yml`
+- Workflow: `image-oocana-mount.yml`
 
 ## Workflow Mapping
 
@@ -79,8 +79,8 @@ Container image for running Oocana with mounted rootfs support.
 | `rootfs-server.yml` | `server-base*` | `amd64-server-base.tar`, `arm64-server-base.tar` |
 | `layer-executor.yml` | `executor-layer*` | `amd64-executor.tar`, `arm64-executor.tar` |
 | `layer-cloud-executor.yml` | `cloud-executor-layer*` | `amd64-executor.tar`, `arm64-executor.tar` |
-| `image-runtime.yml` | `oocana-runtime*` | `ghcr.io/oomol/oocana-runtime` |
-| `image-oocana.yml` | `oocana-mount*` | `ghcr.io/oomol/oocana-mount` |
+| `image-oocana-runtime.yml` | `oocana-runtime*` | `ghcr.io/oomol/oocana-runtime` |
+| `image-oocana-mount.yml` | `oocana-mount*` | `ghcr.io/oomol/oocana-mount` |
 
 ## Other Workflows
 

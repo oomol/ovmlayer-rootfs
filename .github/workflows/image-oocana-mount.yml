@@ -1,4 +1,4 @@
-name: Oocana mount Image
+name: Oocana Mount Image
 # Builds the Oocana mount image dependency environment.
 # This image currently installs runtime dependencies only and expects rootfs-related assets
 # to be provided externally when used in a mounted setup.
@@ -9,7 +9,7 @@ on:
       - "dockerfiles/oocana-mount.dockerfile"
       - "package.json"
       - "package-lock.json"
-      - ".github/workflows/image-oocana.yml"
+      - ".github/workflows/image-oocana-mount.yml"
   push:
     tags:
       - 'oocana-mount**'
@@ -19,7 +19,7 @@ on:
       - "dockerfiles/oocana-mount.dockerfile"
       - "package.json"
       - "package-lock.json"
-      - ".github/workflows/image-oocana.yml"
+      - ".github/workflows/image-oocana-mount.yml"
   workflow_dispatch:
 
 env:
