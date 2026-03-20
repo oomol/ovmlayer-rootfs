@@ -94,6 +94,7 @@ Container image for the mount-style runtime dependency environment.
 
 | Workflow | Trigger | Purpose |
 | --- | --- | --- |
+| `tag-server-base.yml` | push to `main` on `dockerfiles/server-base.dockerfile` or manual dispatch | Extracts the base image tag from `dockerfiles/server-base.dockerfile` and creates a matching git tag in the form `server-base@<version>`. If only `.github/workflows/tag-server-base.yml` changes, it skips pushing the tag. |
 | `tag-executor-layer.yml` | push to `main` on `package.json`, `requirements.txt`, or manual dispatch | Resolves the highest existing `executor-layer` or `cloud-executor-layer` version, bumps the patch version, updates `package.json`, then creates both tags. Include `[skip executor-layer-tag]` in a pushed commit message to bypass the workflow. |
 | `test-actions.yml` | pull request on action files, `workflow_dispatch` | Verifies reusable actions in this repository. |
 | `export-package-layer.yml` | `workflow_call` | Deprecated compatibility workflow that only prints a warning. |
