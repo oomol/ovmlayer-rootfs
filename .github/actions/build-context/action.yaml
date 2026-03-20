@@ -1,5 +1,5 @@
 name: build-context
-description: "Prepares oocana build context - downloads binaries to workspace for Docker multi-architecture builds"
+description: "Prepares oocana build context - downloads binaries to workspace for Docker multi-architecture builds, defaulting rootfs to latest via fetch"
 inputs:
   token:
     description: "GitHub token"
@@ -18,9 +18,9 @@ inputs:
     required: false
     default: latest
   rootfs:
-    description: "rootfs tar"
+    description: "Rootfs release tag passed to fetch. Defaults to latest"
     required: false
-    default: "server-base@0.5.0"
+    default: latest
   platform:
     description: "Platform: studio or cloud"
     required: false
@@ -40,7 +40,7 @@ outputs:
     description: "Resolved ovmlayer version"
     value: ${{ steps.fetch.outputs.ovmlayer_version }}
   rootfs_version:
-    description: "Rootfs version used"
+    description: "Resolved rootfs release tag"
     value: ${{ steps.fetch.outputs.rootfs_version }}
 
 runs:
