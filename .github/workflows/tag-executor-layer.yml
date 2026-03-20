@@ -36,8 +36,16 @@ jobs:
         run: |
           set -euo pipefail
 
+          skip_token='[skip executor-layer-tag]'
+
           if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
             echo "should_push=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [[ "$HEAD_COMMIT_MESSAGE" == *"$skip_token"* ]]; then
+            echo "Skip token detected in head commit message; skipping tag push"
+            echo "should_push=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
@@ -57,6 +65,13 @@ jobs:
 
           if ! git cat-file -e "$BEFORE_SHA^{commit}" 2>/dev/null; then
             git fetch --no-tags --depth=1 origin "$BEFORE_SHA"
+          fi
+
+          commit_messages="$(git log --format=%B "$BEFORE_SHA..$CURRENT_SHA")"
+          if printf '%s\n' "$commit_messages" | grep -F "$skip_token" >/dev/null; then
+            echo "Skip token detected in pushed commits; skipping tag push"
+            echo "should_push=false" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
 
           changed_files="$(git diff --name-only "$BEFORE_SHA" "$CURRENT_SHA")"
