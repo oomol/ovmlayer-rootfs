@@ -22,7 +22,7 @@
 - Typical output directories: `${{ github.workspace }}/amd64`, `${{ github.workspace }}/arm64`
 - Outputs: `oocana_version`, `ovmlayer_version`, `rootfs_version`
 
-### `.github/actions/oocana-runtime`
+### `.github/actions/setup-ovmlayer-runner`
 - Purpose: install `oocana` and `ovmlayer` onto the GitHub Actions runner, then set up a rootfs overlay
 - Required inputs: `architecture`, `ovmlayer_app_id`, `ovmlayer_app_private_key`
 - Optional inputs: `token`, `oocana`, `ovmlayer`, `rootfs`, `platform`
