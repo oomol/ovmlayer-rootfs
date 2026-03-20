@@ -20,7 +20,7 @@ Server foundation rootfs used by runtime-related builds.
 - Architecture: `amd64`, `arm64`
 - Output files: `amd64-server-base.tar`, `arm64-server-base.tar`
 - Tag trigger: `server-base*`
-- Workflow: `rootfs-server.yml`
+- Workflow: `rootfs-server-base.yml`
 
 ### Studio Executor Layer
 
@@ -82,7 +82,7 @@ Container image for the mount-style runtime dependency environment.
 | Workflow | Tag trigger | Build artifacts |
 | --- | --- | --- |
 | `rootfs-base.yml` | `base-rootfs*` | `amd64-rootfs.tar`, `arm64-rootfs.tar` |
-| `rootfs-server.yml` | `server-base*` | `amd64-server-base.tar`, `arm64-server-base.tar` |
+| `rootfs-server-base.yml` | `server-base*` | `amd64-server-base.tar`, `arm64-server-base.tar` |
 | `layer-executor.yml` | `executor-layer*` | `amd64-executor.tar`, `arm64-executor.tar` |
 | `layer-cloud-executor.yml` | `cloud-executor-layer*` | `amd64-executor.tar`, `arm64-executor.tar` |
 | `image-oocana-runtime.yml` | `oocana-runtime*` | `ghcr.io/oomol/oocana-runtime` |
