@@ -1,4 +1,4 @@
-name: oocana-runtime
+name: setup-ovmlayer-runner
 description: "Sets up oocana runtime environment - installs CLI tools to system paths and configures rootfs overlay for runner execution"
 inputs:
   token:

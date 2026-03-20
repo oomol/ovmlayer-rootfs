@@ -20,7 +20,7 @@ jobs:
       - run: sudo depmod -a && sudo modprobe xfs
       - uses: ./.github/actions/arch-detect
         id: arch
-      - uses: ./.github/actions/oocana-runtime
+      - uses: ./.github/actions/setup-ovmlayer-runner
         with:
           token: ${{ github.token }}
           architecture: ${{ steps.arch.outputs.arch }}
