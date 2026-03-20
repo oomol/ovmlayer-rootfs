@@ -56,7 +56,7 @@ Container image for directly running the runtime environment.
 - Does not include:
   - executor layer tarballs such as `amd64-executor.tar` and `arm64-executor.tar`
 - Startup behavior:
-  - runs [`scripts/entrypoint.sh`](/Users/yleaf/oomol/ovmlayer-rootfs/scripts/entrypoint.sh), which initializes ovmlayer from the bundled `server-base-rootfs` tarball if needed
+  - runs [`scripts/entrypoint.sh`](./scripts/entrypoint.sh), which initializes ovmlayer from the bundled `server-base-rootfs` tarball if needed
 - Tag trigger: `oocana-runtime*`
 - Workflow: `image-oocana-runtime.yml`
 
