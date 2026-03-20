@@ -16,7 +16,7 @@ jobs:
         os: [ubuntu-latest, ubuntu-24.04-arm]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - run: sudo depmod -a && sudo modprobe xfs
       - uses: ./.github/actions/arch-detect
         id: arch
@@ -41,7 +41,7 @@ jobs:
             "zsh"  "-i" "-c" "/root/layer-deps/install-executor.sh"
           sudo ovmlayer export --layer=$layer --dest=${{runner.temp}}/${{steps.arch.outputs.arch}}-executor.tar
       - name: upload layer
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{steps.arch.outputs.arch}}-executor-layer
           path: ${{runner.temp}}/${{steps.arch.outputs.arch}}-executor.tar
