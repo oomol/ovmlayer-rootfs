@@ -1,0 +1,135 @@
+name: Tag Server Base
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "dockerfiles/server-base.dockerfile"
+      - ".github/workflows/tag-server-base.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  tag-server-base:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Decide whether to push tag
+        id: mode
+        shell: bash
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          CURRENT_SHA: ${{ github.sha }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            echo "should_push=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [[ "$BEFORE_SHA" =~ ^0+$ ]]; then
+            echo "No previous commit available; skipping tag push"
+            echo "should_push=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if ! git cat-file -e "$BEFORE_SHA^{commit}" 2>/dev/null; then
+            git fetch --no-tags --depth=1 origin "$BEFORE_SHA"
+          fi
+
+          changed_files="$(git diff --name-only "$BEFORE_SHA" "$CURRENT_SHA")"
+          printf 'Changed files:\n%s\n' "$changed_files"
+
+          workflow_changed=false
+          dockerfile_changed=false
+
+          if printf '%s\n' "$changed_files" | grep -Fx ".github/workflows/tag-server-base.yml" >/dev/null; then
+            workflow_changed=true
+          fi
+
+          if printf '%s\n' "$changed_files" | grep -Fx "dockerfiles/server-base.dockerfile" >/dev/null; then
+            dockerfile_changed=true
+          fi
+
+          if [[ "$workflow_changed" == "true" && "$dockerfile_changed" != "true" ]]; then
+            echo "Only the workflow file changed; extraction will run without pushing a tag"
+            echo "should_push=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "should_push=true" >> "$GITHUB_OUTPUT"
+
+      - name: Extract server-base version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          image_ref="$(
+            awk '
+              BEGIN { IGNORECASE = 1 }
+              /^[[:space:]]*FROM[[:space:]]+/ {
+                for (i = 2; i <= NF; i++) {
+                  if ($i ~ /^--/) {
+                    continue
+                  }
+                  print $i
+                  exit
+                }
+              }
+            ' dockerfiles/server-base.dockerfile
+          )"
+
+          if [[ -z "$image_ref" ]]; then
+            echo "Failed to parse FROM image from dockerfiles/server-base.dockerfile" >&2
+            exit 1
+          fi
+
+          if [[ "$image_ref" == *@sha256:* ]]; then
+            echo "Expected a tagged image in FROM, got digest reference: $image_ref" >&2
+            exit 1
+          fi
+
+          raw_version="${image_ref##*:}"
+          if [[ -z "$raw_version" || "$raw_version" == "$image_ref" ]]; then
+            echo "Expected a tag in FROM image reference: $image_ref" >&2
+            exit 1
+          fi
+
+          version="${raw_version#v}"
+          tag="server-base@$version"
+
+          echo "image_ref=$image_ref" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Create and push git tag
+        if: ${{ steps.mode.outputs.should_push == 'true' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          tag="${{ steps.version.outputs.tag }}"
+          commit_sha="${GITHUB_SHA}"
+
+          git fetch --tags --force
+
+          if git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
+            existing_commit="$(git rev-list -n 1 "$tag")"
+            if [[ "$existing_commit" == "$commit_sha" ]]; then
+              echo "Tag $tag already points to $commit_sha"
+              exit 0
+            fi
+
+            echo "Tag $tag already exists on $existing_commit, refusing to move it" >&2
+            exit 1
+          fi
+
+          git tag "$tag" "$commit_sha"
+          git push origin "refs/tags/$tag"
