@@ -33,11 +33,13 @@ RUN --mount=type=bind,source=./amd64,target=/tmp/amd64 \
     if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
       cp -r /tmp/amd64/oocana /usr/bin/ && \
       cp -r /tmp/amd64/ovmlayer/* /usr/bin/ && \
-      cp /tmp/amd64/rootfs.tar /root/rootfs.tar; \
+      cp /tmp/amd64/rootfs.tar /root/rootfs.tar && \
+      cp /tmp/amd64/executor-layer.tar /tmp/executor-layer.tar; \
     elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
       cp -r /tmp/arm64/oocana /usr/bin/ && \
       cp -r /tmp/arm64/ovmlayer/* /usr/bin/ && \
-      cp /tmp/arm64/rootfs.tar /root/rootfs.tar; \
+      cp /tmp/arm64/rootfs.tar /root/rootfs.tar && \
+      cp /tmp/arm64/executor-layer.tar /tmp/executor-layer.tar; \
     else \
       echo "Unsupported platform: $TARGETPLATFORM" && exit 23; \
     fi

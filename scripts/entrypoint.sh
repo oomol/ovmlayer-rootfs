@@ -19,4 +19,13 @@ else
   echo "[Init] Initializing Layer with production configuration."
   ovmlayer setup production --base-rootfs=/root/rootfs.tar
 fi
+
+if [ ! -d "/opt/ovmlayer/layer_dir/executor" ]; then
+  ovmlayer import --rename executor /tmp/executor-layer.tar
+fi
+
+# sync studio config
+mkdir -p /root/.oomol-studio/oocana
+echo '{"base_rootfs":["executor"]}' > /root/.oomol-studio/oocana/layer.json
+
 exec "$@"

@@ -51,10 +51,9 @@ Container image for directly running the runtime environment.
   - `oocana` binary in `/usr/bin/oocana`
   - `ovmlayer` binaries in `/usr/bin/`
   - bundled `server-base-rootfs` tarball at `/root/rootfs.tar`, sourced from the release artifact `amd64-server-base.tar` or `arm64-server-base.tar`
+  - bundled latest `executor-layer` tarball at `/tmp/executor-layer.tar`, sourced from the release artifact `amd64-executor.tar` or `arm64-executor.tar`
   - layer working directory at `/opt/ovmlayer`
   - runtime dependencies from `package.json`, `requirements.txt`, and `mosquitto`
-- Does not include:
-  - executor layer tarballs such as `amd64-executor.tar` and `arm64-executor.tar`
 - Startup behavior:
   - runs [`scripts/entrypoint.sh`](./scripts/entrypoint.sh), which initializes ovmlayer from the bundled `server-base-rootfs` tarball if needed
 - Tag trigger: `oocana-runtime*`

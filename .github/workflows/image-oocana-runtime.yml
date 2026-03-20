@@ -1,12 +1,13 @@
 name: Oocana Runtime Image
 # Builds Oocana runtime container image with oocana CLI and ovmlayer.
-# Does NOT include executor layers - those are separate tar artifacts.
+# Includes the latest executor layer tarball in the image at /tmp/executor-layer.tar.
 on:
   pull_request:
     paths:
       - "dockerfiles/oocana-runtime.dockerfile"
       - "package.json"
       - "package-lock.json"
+      - "requirements.txt"
       - "scripts/entrypoint.sh"
       - ".github/workflows/image-oocana-runtime.yml"
   push:
@@ -18,6 +19,7 @@ on:
       - "dockerfiles/oocana-runtime.dockerfile"
       - "package.json"
       - "package-lock.json"
+      - "requirements.txt"
       - "scripts/entrypoint.sh"
       - ".github/workflows/image-oocana-runtime.yml"
   workflow_dispatch:
@@ -27,6 +29,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - name: Resolve executor layer version
+        id: executor-layer-version
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          version="$(
+            gh release list --repo oomol/ovmlayer-rootfs --exclude-drafts --exclude-pre-releases --limit 100 \
+              | awk '{print $1}' \
+              | grep '^executor-layer@' \
+              | sort -V \
+              | tail -n 1
+          )"
+
+          if [ -z "$version" ]; then
+            echo "Failed to resolve latest executor layer release" >&2
+            exit 1
+          fi
+
+          echo "version=$version" >> "$GITHUB_OUTPUT"
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v4
         with:
@@ -44,6 +68,18 @@ jobs:
           architecture: arm64
           ovmlayer_app_id: ${{ vars.OOMOL_DOWNLOADER_APP_ID }}
           ovmlayer_app_private_key: ${{ secrets.OOMOL_DOWNLOADER_APP_PRIVATE_KEY }}
+      - name: Download executor layer (arm64)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          gh release download "${{ steps.executor-layer-version.outputs.version }}" \
+            --repo oomol/ovmlayer-rootfs \
+            --pattern "arm64-executor.tar" \
+            --clobber \
+            -O "${{ github.workspace }}/arm64/executor-layer.tar"
       - name: Prepare build context (amd64)
         id: build-context-amd64
         uses: ./.github/actions/build-context
@@ -52,6 +88,18 @@ jobs:
           architecture: amd64
           ovmlayer_app_id: ${{ vars.OOMOL_DOWNLOADER_APP_ID }}
           ovmlayer_app_private_key: ${{ secrets.OOMOL_DOWNLOADER_APP_PRIVATE_KEY }}
+      - name: Download executor layer (amd64)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          gh release download "${{ steps.executor-layer-version.outputs.version }}" \
+            --repo oomol/ovmlayer-rootfs \
+            --pattern "amd64-executor.tar" \
+            --clobber \
+            -O "${{ github.workspace }}/amd64/executor-layer.tar"
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v6
@@ -68,6 +116,7 @@ jobs:
             io.oomol.oocana.version=${{ steps.build-context-amd64.outputs.oocana_version }}
             io.oomol.ovmlayer.version=${{ steps.build-context-amd64.outputs.ovmlayer_version }}
             io.oomol.rootfs.version=${{ steps.build-context-amd64.outputs.rootfs_version }}
+            io.oomol.executor-layer.version=${{ steps.executor-layer-version.outputs.version }}
       - name: Build and push
         uses: docker/build-push-action@v7
         with:
