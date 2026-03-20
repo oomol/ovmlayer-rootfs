@@ -4,18 +4,18 @@ This repository builds Oomol runtime assets for `amd64` and `arm64`.
 
 ## Release Artifacts
 
-### Base Rootfs
+### `base-rootfs`
 
-Minimal Ubuntu-based rootfs with `zsh`, used as the lightest ovmlayer test base.
+Minimal Ubuntu-based `base-rootfs` with `zsh`, used as the lightest ovmlayer test base.
 
 - Architecture: `amd64`, `arm64`
 - Output files: `amd64-rootfs.tar`, `arm64-rootfs.tar`
 - Tag trigger: `base-rootfs*`
 - Workflow: `rootfs-base.yml`
 
-### Server Rootfs
+### `server-base-rootfs`
 
-Server foundation rootfs used by runtime-related builds.
+Server foundation `server-base-rootfs` used by runtime-related builds.
 
 - Architecture: `amd64`, `arm64`
 - Output files: `amd64-server-base.tar`, `arm64-server-base.tar`
@@ -50,13 +50,13 @@ Container image for directly running the runtime environment.
 - Includes:
   - `oocana` binary in `/usr/bin/oocana`
   - `ovmlayer` binaries in `/usr/bin/`
-  - bundled server rootfs tarball at `/root/rootfs.tar`, sourced from the release artifact `amd64-server-base.tar` or `arm64-server-base.tar`
+  - bundled `server-base-rootfs` tarball at `/root/rootfs.tar`, sourced from the release artifact `amd64-server-base.tar` or `arm64-server-base.tar`
   - layer working directory at `/opt/ovmlayer`
   - runtime dependencies from `package.json`, `requirements.txt`, and `mosquitto`
 - Does not include:
   - executor layer tarballs such as `amd64-executor.tar` and `arm64-executor.tar`
 - Startup behavior:
-  - runs [`scripts/entrypoint.sh`](/Users/yleaf/oomol/ovmlayer-rootfs/scripts/entrypoint.sh), which initializes ovmlayer from `/root/rootfs.tar` if needed
+  - runs [`scripts/entrypoint.sh`](/Users/yleaf/oomol/ovmlayer-rootfs/scripts/entrypoint.sh), which initializes ovmlayer from the bundled `server-base-rootfs` tarball if needed
 - Tag trigger: `oocana-runtime*`
 - Workflow: `image-oocana-runtime.yml`
 
@@ -70,10 +70,12 @@ Container image for the mount-style runtime dependency environment.
 - Does not include:
   - `oocana` binary
   - `ovmlayer` binaries
-  - bundled `rootfs.tar`
+  - bundled `server-base-rootfs` tarball
   - pre-initialized layer data under `/opt/ovmlayer`
+- Expected external asset:
+  - `server-base-rootfs`, matching the release artifact `amd64-server-base.tar` or `arm64-server-base.tar`
 - Intended use:
-  - provide the dependency environment when `oocana`, `ovmlayer`, `rootfs`, or related layer assets are supplied from outside the image
+  - provide the dependency environment when `oocana`, `ovmlayer`, `server-base-rootfs`, or related layer assets are supplied from outside the image
 - Tag trigger: `oocana-mount*`
 - Workflow: `image-oocana-mount.yml`
 

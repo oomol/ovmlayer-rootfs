@@ -1,6 +1,6 @@
 name: Oocana Mount Image
 # Builds the Oocana mount image dependency environment.
-# This image currently installs runtime dependencies only and expects rootfs-related assets
+# This image currently installs runtime dependencies only and expects server-base-rootfs-related assets
 # to be provided externally when used in a mounted setup.
 
 on:
