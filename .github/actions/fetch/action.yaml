@@ -58,7 +58,7 @@ runs:
 
     - name: Generate GitHub App token for ovmlayer
       id: ovmlayer-token
-      uses: actions/create-github-app-token@v2
+      uses: actions/create-github-app-token@v3
       with:
         app-id: ${{ inputs.ovmlayer_app_id }}
         private-key: ${{ inputs.ovmlayer_app_private_key }}
