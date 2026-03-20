@@ -44,15 +44,17 @@ Executor layer for cloud runtime, built from the same dependency sources as the 
 
 ### Runtime Image
 
-Container image with `oocana` and `ovmlayer` for directly running the runtime environment. Executor layers are released separately and are not baked into this image.
+Container image for directly running the runtime environment.
 
 - Image: `ghcr.io/oomol/oocana-runtime`
 - Includes:
   - `oocana` binary in `/usr/bin/oocana`
   - `ovmlayer` binaries in `/usr/bin/`
-  - bundled rootfs tarball at `/root/rootfs.tar`
+  - bundled server rootfs tarball at `/root/rootfs.tar`, sourced from the release artifact `amd64-server-base.tar` or `arm64-server-base.tar`
   - layer working directory at `/opt/ovmlayer`
   - runtime dependencies from `package.json`, `requirements.txt`, and `mosquitto`
+- Does not include:
+  - executor layer tarballs such as `amd64-executor.tar` and `arm64-executor.tar`
 - Startup behavior:
   - runs [`scripts/entrypoint.sh`](/Users/yleaf/oomol/ovmlayer-rootfs/scripts/entrypoint.sh), which initializes ovmlayer from `/root/rootfs.tar` if needed
 - Tag trigger: `oocana-runtime*`
@@ -60,14 +62,18 @@ Container image with `oocana` and `ovmlayer` for directly running the runtime en
 
 ### Oocana Mount Image
 
-Container image for running Oocana with mounted rootfs support.
+Container image for the mount-style runtime dependency environment.
 
 - Image: `ghcr.io/oomol/oocana-mount`
 - Includes:
   - runtime dependencies from `package.json`, `requirements.txt`, and `mosquitto`
-  - does not currently bake `oocana`, `ovmlayer`, or `rootfs.tar` into the image
+- Does not include:
+  - `oocana` binary
+  - `ovmlayer` binaries
+  - bundled `rootfs.tar`
+  - pre-initialized layer data under `/opt/ovmlayer`
 - Intended use:
-  - provide the dependency environment for scenarios where rootfs and related layer assets are mounted from outside the container
+  - provide the dependency environment when `oocana`, `ovmlayer`, `rootfs`, or related layer assets are supplied from outside the image
 - Tag trigger: `oocana-mount*`
 - Workflow: `image-oocana-mount.yml`
 
