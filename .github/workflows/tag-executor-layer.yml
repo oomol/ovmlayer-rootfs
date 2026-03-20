@@ -157,20 +157,27 @@ jobs:
           set -euo pipefail
 
           python3 - <<'PY'
-          import json
           import os
+          import re
 
           path = "package.json"
           version = os.environ["VERSION"]
 
           with open(path, encoding="utf-8") as file:
-              data = json.load(file)
+              content = file.read()
 
-          data["version"] = version
+          updated_content, count = re.subn(
+              r'("version"\s*:\s*")[^"]*(")',
+              rf'\g<1>{version}\2',
+              content,
+              count=1,
+          )
+
+          if count != 1:
+              raise SystemExit("Failed to update version field in package.json")
 
           with open(path, "w", encoding="utf-8") as file:
-              json.dump(data, file, indent=2)
-              file.write("\n")
+              file.write(updated_content)
           PY
 
           if git diff --quiet -- package.json; then

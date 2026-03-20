@@ -112,10 +112,12 @@ jobs:
       - name: Create and push git tag
         if: ${{ steps.mode.outputs.should_push == 'true' }}
         shell: bash
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
         run: |
           set -euo pipefail
 
-          tag="${{ steps.version.outputs.tag }}"
+          tag="$TAG"
           commit_sha="${GITHUB_SHA}"
 
           git fetch --tags --force
