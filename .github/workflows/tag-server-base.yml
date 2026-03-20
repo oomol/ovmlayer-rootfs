@@ -16,7 +16,18 @@ jobs:
   tag-server-base:
     runs-on: ubuntu-latest
     steps:
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.OOMOL_DOWNLOADER_APP_ID }}
+          private-key: ${{ secrets.OOMOL_DOWNLOADER_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+
       - uses: actions/checkout@v6
+        with:
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Decide whether to push tag
         id: mode
