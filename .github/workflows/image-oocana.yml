@@ -1,7 +1,7 @@
 name: Oocana mount Image
-# Builds Oocana container image with oocana CLI and ovmlayer.
-# Does NOT include executor layers and ovmlayer's rootfs those are separate tar artifacts.
-# this image need mount rootfs so that ovmlayer can work properly.
+# Builds the Oocana mount image dependency environment.
+# This image currently installs runtime dependencies only and expects rootfs-related assets
+# to be provided externally when used in a mounted setup.
 
 on:
   pull_request:
@@ -9,7 +9,6 @@ on:
       - "dockerfiles/oocana-mount.dockerfile"
       - "package.json"
       - "package-lock.json"
-      - "scripts/entrypoint.sh"
       - ".github/workflows/image-oocana.yml"
   push:
     tags:
@@ -20,7 +19,6 @@ on:
       - "dockerfiles/oocana-mount.dockerfile"
       - "package.json"
       - "package-lock.json"
-      - "scripts/entrypoint.sh"
       - ".github/workflows/image-oocana.yml"
   workflow_dispatch:
 
@@ -53,21 +51,7 @@ jobs:
           flavor: |
             latest=auto
           labels: |
-            org.opencontainers.image.description=A container for running Oocana directly in command line.
-      - name: Prepare build context (arm64)
-        uses: ./.github/actions/build-context
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          architecture: arm64
-          ovmlayer_app_id: ${{ vars.OOMOL_DOWNLOADER_APP_ID }}
-          ovmlayer_app_private_key: ${{ secrets.OOMOL_DOWNLOADER_APP_PRIVATE_KEY }}
-      - name: Prepare build context (amd64)
-        uses: ./.github/actions/build-context
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          architecture: amd64
-          ovmlayer_app_id: ${{ vars.OOMOL_DOWNLOADER_APP_ID }}
-          ovmlayer_app_private_key: ${{ secrets.OOMOL_DOWNLOADER_APP_PRIVATE_KEY }}
+            org.opencontainers.image.description=Dependency environment for the Oocana mount image workflow.
       - name: Build and push
         uses: docker/build-push-action@v7
         with:
