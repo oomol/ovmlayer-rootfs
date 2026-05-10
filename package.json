@@ -1,6 +1,6 @@
 {
   "name": "@oomol/ovmlayer-rootfs",
-  "version": "0.1.3",
+  "version": "0.1.5",
   "description": "used to install executor and some dependencies in oomol studio.",
   "private": true,
   "dependencies": {
