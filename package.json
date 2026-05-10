@@ -4,7 +4,7 @@
   "description": "used to install executor and some dependencies in oomol studio.",
   "private": true,
   "dependencies": {
-    "@oomol/node-executor": "0.20.45",
+    "@oomol/node-executor": "0.20.46",
     "@oomol/oocana-sdk": "0.22.9",
     "oomol-fusion-sdk": "2.0.0"
   }
