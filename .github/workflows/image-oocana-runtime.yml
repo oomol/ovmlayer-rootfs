@@ -66,7 +66,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           architecture: arm64
-          ovmlayer_app_id: ${{ vars.OOMOL_DOWNLOADER_APP_ID }}
+          ovmlayer_app_client_id: ${{ vars.OOMOL_DOWNLOADER_APP_CLIENT_ID }}
           ovmlayer_app_private_key: ${{ secrets.OOMOL_DOWNLOADER_APP_PRIVATE_KEY }}
       - name: Download executor layer (arm64)
         shell: bash
@@ -86,7 +86,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           architecture: amd64
-          ovmlayer_app_id: ${{ vars.OOMOL_DOWNLOADER_APP_ID }}
+          ovmlayer_app_client_id: ${{ vars.OOMOL_DOWNLOADER_APP_CLIENT_ID }}
           ovmlayer_app_private_key: ${{ secrets.OOMOL_DOWNLOADER_APP_PRIVATE_KEY }}
       - name: Download executor layer (amd64)
         shell: bash
