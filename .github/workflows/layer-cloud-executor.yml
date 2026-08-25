@@ -26,7 +26,7 @@ jobs:
           architecture: ${{ steps.arch.outputs.arch }}
           ovmlayer: v0.6.7
           platform: "cloud"
-          ovmlayer_app_id: ${{ vars.OOMOL_DOWNLOADER_APP_ID }}
+          ovmlayer_app_client_id: ${{ vars.OOMOL_DOWNLOADER_APP_CLIENT_ID }}
           ovmlayer_app_private_key: ${{ secrets.OOMOL_DOWNLOADER_APP_PRIVATE_KEY }}
       - name: create layer
         run: |

@@ -27,8 +27,8 @@ inputs:
     description: "Platform: studio or cloud"
     required: false
     default: "studio"
-  ovmlayer_app_id:
-    description: "GitHub App ID for downloading ovmlayer from private repo"
+  ovmlayer_app_client_id:
+    description: "GitHub App Client ID for downloading ovmlayer from private repo"
     required: true
   ovmlayer_app_private_key:
     description: "GitHub App Private Key for downloading ovmlayer"
@@ -60,7 +60,7 @@ runs:
       id: ovmlayer-token
       uses: actions/create-github-app-token@v3
       with:
-        app-id: ${{ inputs.ovmlayer_app_id }}
+        client-id: ${{ inputs.ovmlayer_app_client_id }}
         private-key: ${{ inputs.ovmlayer_app_private_key }}
         owner: oomol
         repositories: ovmlayer,ovmlayer-next
